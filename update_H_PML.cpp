@@ -70,8 +70,8 @@ void update_Hr_PML(double ***Hr, double ***Hrth1, double ***Hrth2, double ***Hrp
     for(int i = PML_L + 1; i <= Nr - PML_L - 1; i++){
         for(int j = Nth - PML_L; j < Nph; j++){
             for(int k = PML_L; k < Nph - PML_L; k++){
-                Hrth1[i][j][k] = CHRTH1_00[j] * Hrth1[i][j][k] - CHRTH1_01[j] / MU0 / r(i) / std::sin(theta(j + 0.5)) / dph * (Eth[NEW][i][j][k+1] - Eth[NEW][i][j][k]);
-                Hrth2[i][j][k] = Hrth2[i][j][k] - dt / cot(theta(j+0.5)) / 2.0 / MU0 / r(i) * (Eph[NEW][i][j+1][k] + Eph[NEW][i][j][k]);
+                Hrth1[i][j][k] = CHRTH1_00[j] * Hrth1[i][j][k] - CHRTH1_01[j] / MU0 / r(i) / dth * (Eph[NEW][i][j+1][k] - Eph[NEW][i][j][k]);
+                Hrth2[i][j][k] = Hrth2[i][j][k] - dt * cot(theta(j+0.5)) / 2.0 / MU0 / r(i) * (Eph[NEW][i][j+1][k] + Eph[NEW][i][j][k]);
                 Hrph[i][j][k] = CHRPH_00[k] * Hrph[i][j][k] + CHRPH_01[k] / MU0 / r(i) / std::sin(j + 0.5) / dph * (Eth[NEW][i][j][k+1] - Eth[NEW][i][j][k]);
                 Hr[i][j][k] = Hrth1[i][j][k] + Hrth2[i][j][k] + Hrph[i][j][k];
                 // check[NEW][i][j][k] += 1.0;

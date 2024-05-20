@@ -76,7 +76,7 @@ int main(){
     make_dir();
     initialize_PML(CERTH1_00, CERTH1_01, CERPH_00, CERPH_01, CETHPH_00, CETHPH_01, CETHR_10, CETHR_11, CETHR_TILDE_00, CETHR_TILDE_01,
                      CEPHR_10, CEPHR_11, CEPHR_TILDE_00, CEPHR_TILDE_01, CEPHTH_00, CEPHTH_01, CETH_TILDE_00, CETH_TILDE_01, CEPH_TILDE_00,
-                      CEPH_TILDE_01, CHRTH1_00, CHRTH1_01,CHRPH_00, CHRPH_01, CHTHPH_00, CHTHPH_01, CHTHR_TILDE_00,CHPHR_TILDE_01, CHPHR_10,
+                      CEPH_TILDE_01, CHRTH1_00, CHRTH1_01,CHRPH_00, CHRPH_01, CHTHPH_00, CHTHPH_01, CHTHR_TILDE_00,CHPHR_TILDE_01, CHTHR_10,
                        CHTHR_11, CHPHTH_00,CHPHTH_01, CHPHR_TILDE_00, CHPHR_TILDE_01, CHPHR_10, CHPHR_11, CHTH_TILDE, CHPH_TILDE);
 
     // exit(0);
@@ -116,13 +116,13 @@ int main(){
         update_Hth_PML(Hth, Hthr, Hthph, Hthr_tilde, Er, Eph_tilde,
                          CHTHPH_00, CHTHPH_01, CHTHR_TILDE_00, CHTHR_TILDE_01,
                          CHTHR_10, CHTHR_11, check, n);
-        update_Hph_PML(Hph, Hphr, Hphth, Hphr_tilde, Er, Eph_tilde,
+        update_Hph_PML(Hph, Hphr, Hphth, Hphr_tilde, Er, Eth_tilde,
                          CHPHTH_00, CHPHTH_01, CHPHR_TILDE_00, CHPHR_TILDE_01,
                           CHPHR_10, CHPHR_11, check, n);
         update_Hth_tilde(Hth_tilde, Hth, CHTH_TILDE, n);
         update_Hph_tilde(Hph_tilde, Hph, CHPH_TILDE, n);
 
-        output_E(Er, Eth, Eph, Hr, Hth, Hph, n, n0);
+        // output_E(Er, Eth, Eph, Hr, Hth, Hph, n, n0);
 
         ofs_obs << n * dt << " " << Er[int(obs_r / dr)][int(obs_th / Rdth)][int(obs_ph / Rdph)] << std::endl;
     }
@@ -179,5 +179,44 @@ int main(){
     free_memory3d(Hph_tilde, Nr, Nth);
     free_memory3d(Hphr, Nr, Nth);
     free_memory4d(Hphr_tilde, 2, Nr, Nth);
-    free_memory3d(Hphr, Nr, Nth);
+    free_memory3d(Hphth, Nr, Nth);
+
+    delete [] CERTH1_00;
+    delete [] CERTH1_01;
+    delete [] CERPH_00;
+    delete [] CERPH_01;
+    delete [] CETHPH_00;
+    delete [] CETHPH_01;
+    delete [] CETHR_10;
+    delete [] CETHR_11;
+    delete [] CETHR_TILDE_00;
+    delete [] CETHR_TILDE_01;
+    delete [] CEPHR_TILDE_00;
+    delete [] CEPHR_TILDE_01;
+    delete [] CEPHR_10;
+    delete [] CEPHR_11;
+    delete [] CEPHTH_00;
+    delete [] CEPHTH_01;
+    delete [] CETH_TILDE_00;
+    delete [] CETH_TILDE_01;
+    delete [] CEPH_TILDE_00;
+    delete [] CEPH_TILDE_01;
+    delete [] CHRTH1_00;
+    delete [] CHRTH1_01;
+    delete [] CHRPH_00;
+    delete [] CHRPH_01;
+    delete [] CHTHPH_00;
+    delete [] CHTHPH_01;
+    delete [] CHTHR_TILDE_00;
+    delete [] CHTHR_TILDE_01;
+    delete [] CHTHR_10;
+    delete [] CHTHR_11;
+    delete [] CHPHTH_00;
+    delete [] CHPHTH_01;
+    delete [] CHPHR_TILDE_00;
+    delete [] CHPHR_TILDE_01;
+    delete [] CHPHR_10;
+    delete [] CHPHR_11;
+    delete [] CHTH_TILDE;
+    delete [] CHPH_TILDE;
 }

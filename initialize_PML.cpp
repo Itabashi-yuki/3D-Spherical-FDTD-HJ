@@ -5,24 +5,22 @@
 double PML_sigma_r(double i){
     double sigma_max = - (PML_M + 1.0) * C0 / 2.0 / PML_L / dr * std::log(PML_R);
     return sigma_max * std::pow((PML_L - i) * dr / PML_L / dr, PML_M);
-    // return sigma_max * std::pow((PML_L * dr - r(i)) / PML_L / dr, PML_M);
 }
 
 double PML_sigma_th(double j){
-    double sigma_max = - (PML_M + 1.0) * C0 / 2.0 / PML_L / dth * std::log(PML_R);
+    double sigma_max = - (PML_M + 1.0) * C0 / 2.0 / PML_L / (R0 * dth) * std::log(PML_R);
     return sigma_max * std::pow((PML_L - j) * dth / PML_L / dth, PML_M);
 }
 
 double PML_sigma_ph(double k){
-    double sigma_max = - (PML_M + 1.0) * C0 / 2.0 / PML_L / dph * std::log(PML_R);
+    double sigma_max = - (PML_M + 1.0) * C0 / 2.0 / PML_L / (R0 * dph) * std::log(PML_R);
     return sigma_max * std::pow((PML_L - k) * dph / PML_L / dph, PML_M);
 }
 
+
 double PML_sigma_r_tilde(double i){
     double sigma_max = - (PML_M + 1.0) * C0 / 2.0 / PML_L / dr * std::log(PML_R);
-    // return sigma_max * ( PML_L * dr / (PML_M + 1.0)) * std::pow(( (PML_L - i) / PML_L ), (PML_M + 1));
-    return sigma_max * (  PML_L  / (PML_M + 1.0)) * std::pow(( (PML_L - i) * dr / PML_L / dr ), (PML_M + 1.0));
-    // return sigma_max * ( - PML_L / ( PML_M + 1.0) ) * std::pow(  ( PML_L * dr - r(i) ) / ( PML_L * dr ), (PML_M + 1.0));
+    return sigma_max * ( PML_L  / (PML_M + 1.0)) * std::pow(( (PML_L - i) / PML_L ), (PML_M + 1.0));
 }
 
 double PML_C00(double sigma){
@@ -120,7 +118,9 @@ void initialize_PML(double *CERTH1_00, double *CERTH1_01, double *CERPH_00, doub
         sigma_r_tilde_H[i] = PML_sigma_r_tilde(Nr - (i + 0.5));
     }
 
+    
     std::ofstream ofs_sigma("./data/" + global_dirName + "/sigma.dat");
+    ofs_sigma << "#sigma_r_E, sigma_th_E, sigma_ph_E, sigma_r_H, sigma_th_H, sigma_ph_H, sigma_r_tilde_E, sigma_r_tilde_H" << std::endl;
     for(int j = 0; j < Nth; j++){
         ofs_sigma << j << " " << sigma_r_E[j] << " " << sigma_th_E[j] << " " << sigma_ph_E[j] << " " << sigma_r_H[j] << " " << sigma_th_H[j] << " " 
                     << sigma_ph_H[j] << " " << sigma_r_tilde_E[j] << " " << sigma_r_tilde_H[j] << std::endl;
@@ -128,7 +128,6 @@ void initialize_PML(double *CERTH1_00, double *CERTH1_01, double *CERPH_00, doub
 
     ofs_sigma.close();
     // exit(0);
-
     for(int j = 1; j <= Nth - 1; j++){
         CERTH1_00[j] = PML_C00(sigma_th_E[j]);
         CERTH1_01[j] = PML_C01(sigma_th_E[j]);

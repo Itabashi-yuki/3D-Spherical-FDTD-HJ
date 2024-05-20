@@ -28,7 +28,7 @@ constexpr int Nr { int(Rr / dr) };
 constexpr int Nth { int(Rth / Rdth) };
 constexpr int Nph { int(Rph / Rdph) };
 
-constexpr double dt { 0.5 / C0 / sqrt( 1.0 / dr / dr + 1.0 / (R0 * dth) / (R0 * dth) 
+constexpr double dt { 0.9 / C0 / sqrt( 1.0 / dr / dr + 1.0 / (R0 * dth) / (R0 * dth) 
                         + 1.0 / (R0 * std::sin(M_PI / 2.0 - thR / 2.0) * dph) / (R0 * std::sin(M_PI / 2.0 - thR / 2.0) * dph)  ) };
 constexpr double Tmax { 0.0002 };
 constexpr int Nt { int(Tmax / dt) };
@@ -40,8 +40,8 @@ constexpr double PML_M { 3.7 };
 constexpr double PML_R { 1.0e-6 };
 
 /* 電流源パラメタ */
-constexpr double sigma { 12 * dt };
-constexpr double t0 { 6.0 * sigma };
+constexpr double sigma_J { 12 * dt };
+constexpr double t0 { 6.0 * sigma_J };
 constexpr double source_r { Rr / 2.0 };
 constexpr double source_th { Rth / 2.0 };
 constexpr double source_ph { Rph / 2.0  - 10e3 };
@@ -49,7 +49,7 @@ constexpr double source_ph { Rph / 2.0  - 10e3 };
 /*観測パラメタ*/
 constexpr double obs_r { source_r };
 constexpr double obs_th { source_th };
-constexpr double obs_ph { source_ph };
+constexpr double obs_ph { source_ph + 10.0e3 };
 constexpr double obs_t_step{ 1.0e-3 };
 
 void update_Er(double ***Er, double ****Hth, double ****Hph, double ****check, int n);
