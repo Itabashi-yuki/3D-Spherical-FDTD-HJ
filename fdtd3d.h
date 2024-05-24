@@ -44,12 +44,13 @@ constexpr double sigma_J { 12 * dt };
 constexpr double t0 { 6.0 * sigma_J };
 constexpr double source_r { Rr / 2.0 };
 constexpr double source_th { Rth / 2.0 };
-constexpr double source_ph { Rph / 2.0  - 10e3 };
+// constexpr double source_ph { Rph / 2.0  + 10.0e3 };
+constexpr double source_ph { Rph / 2.0 };
 
 /*観測パラメタ*/
 constexpr double obs_r { source_r };
 constexpr double obs_th { source_th };
-constexpr double obs_ph { source_ph + 10.0e3 };
+constexpr double obs_ph { source_ph + 5.0e3 };
 constexpr double obs_t_step{ 1.0e-3 };
 
 void update_Er(double ***Er, double ****Hth, double ****Hph, double ****check, int n);

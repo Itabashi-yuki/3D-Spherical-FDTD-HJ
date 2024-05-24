@@ -9,18 +9,18 @@ double PML_sigma_r(double i){
 
 double PML_sigma_th(double j){
     double sigma_max = - (PML_M + 1.0) * C0 / 2.0 / PML_L / (R0 * dth) * std::log(PML_R);
-    return sigma_max * std::pow((PML_L - j) * dth / PML_L / dth, PML_M);
+    return sigma_max * std::pow((PML_L - j) / PML_L, PML_M);
 }
 
 double PML_sigma_ph(double k){
     double sigma_max = - (PML_M + 1.0) * C0 / 2.0 / PML_L / (R0 * dph) * std::log(PML_R);
-    return sigma_max * std::pow((PML_L - k) * dph / PML_L / dph, PML_M);
+    return sigma_max * std::pow((PML_L - k) / PML_L, PML_M);
 }
 
 
 double PML_sigma_r_tilde(double i){
     double sigma_max = - (PML_M + 1.0) * C0 / 2.0 / PML_L / dr * std::log(PML_R);
-    return sigma_max * ( PML_L  / (PML_M + 1.0)) * std::pow(( (PML_L - i) / PML_L ), (PML_M + 1.0));
+    return sigma_max * ( PML_L * dr / (PML_M + 1.0)) * std::pow(( (PML_L - i) / PML_L ), (PML_M + 1.0));
 }
 
 double PML_C00(double sigma){

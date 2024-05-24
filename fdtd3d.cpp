@@ -76,7 +76,7 @@ int main(){
     make_dir();
     initialize_PML(CERTH1_00, CERTH1_01, CERPH_00, CERPH_01, CETHPH_00, CETHPH_01, CETHR_10, CETHR_11, CETHR_TILDE_00, CETHR_TILDE_01,
                      CEPHR_10, CEPHR_11, CEPHR_TILDE_00, CEPHR_TILDE_01, CEPHTH_00, CEPHTH_01, CETH_TILDE_00, CETH_TILDE_01, CEPH_TILDE_00,
-                      CEPH_TILDE_01, CHRTH1_00, CHRTH1_01,CHRPH_00, CHRPH_01, CHTHPH_00, CHTHPH_01, CHTHR_TILDE_00,CHPHR_TILDE_01, CHTHR_10,
+                      CEPH_TILDE_01, CHRTH1_00, CHRTH1_01,CHRPH_00, CHRPH_01, CHTHPH_00, CHTHPH_01, CHTHR_TILDE_00,CHTHR_TILDE_01, CHTHR_10,
                        CHTHR_11, CHPHTH_00,CHPHTH_01, CHPHR_TILDE_00, CHPHR_TILDE_01, CHPHR_10, CHPHR_11, CHTH_TILDE, CHPH_TILDE);
 
     // exit(0);
@@ -90,6 +90,7 @@ int main(){
 
     std::ofstream ofs_obs("./data/" + global_dirName +"/obs.dat",std::ios::app);
     for(int n = 1; n < Nt; n++){
+        int NEW = n % 2;
         if(n % 10 == 0)
             std::cout << n << " / " << Nt << std::endl;
 
@@ -122,25 +123,31 @@ int main(){
         update_Hth_tilde(Hth_tilde, Hth, CHTH_TILDE, n);
         update_Hph_tilde(Hph_tilde, Hph, CHPH_TILDE, n);
 
-        // output_E(Er, Eth, Eph, Hr, Hth, Hph, n, n0);
+        // std::ofstream ofs("./data/" + global_dirName + "/E_PML_" + std::to_string(n) + ".dat");
+        // for(int k = 0; k <= Nph; k+=2){
+        //     ofs << k * R0 * dph * 1.0e-3 << " " << Erth1[NEW][Nr / 2][Nth / 2][k] << " " << Erth2[NEW][Nr / 2][Nth / 2][k] << " " << Erph[NEW][Nr / 2][Nth / 2][k] 
+        //             << " " << Ethph[NEW][Nr / 2][Nth / 2][k] << " " << Ethr[NEW][Nr / 2][Nth / 2][k] << " " << Ethr_tilde[NEW][Nr / 2][Nth / 2][k] << std::endl;          
+        // }
+
+        output_E(Er, Eth, Eph, Hr, Hth, Hph, n, n0);
 
         ofs_obs << n * dt << " " << Er[int(obs_r / dr)][int(obs_th / Rdth)][int(obs_ph / Rdph)] << std::endl;
     }
 
-    std::ofstream ofs_check("./data/"+ global_dirName + "/check.dat");
-    ofs_check << "# n, i, j, k, check" << std::endl;
-        for(int n = 0; n < 2; n++){
-            for(int i = 0; i < Nr; i++){
-                for(int j = 0; j < Nth; j++){
-                    for(int k = 0; k < Nph; k++){
-                    ofs_check << n << " " << i << " " << j << " " << k << " " << check[n][i][j][k] << std::endl;
-                    }
-                    ofs_check << std::endl;
-                }
-                ofs_check << std::endl;
-            }
-            ofs_check << std::endl;
-        }
+    // std::ofstream ofs_check("./data/"+ global_dirName + "/check.dat");
+    // ofs_check << "# n, i, j, k, check" << std::endl;
+    //     for(int n = 0; n < 2; n++){
+    //         for(int i = 0; i < Nr; i++){
+    //             for(int j = 0; j < Nth; j++){
+    //                 for(int k = 0; k < Nph; k++){
+    //                 ofs_check << n << " " << i << " " << j << " " << k << " " << check[n][i][j][k] << std::endl;
+    //                 }
+    //                 ofs_check << std::endl;
+    //             }
+    //             ofs_check << std::endl;
+    //         }
+    //         ofs_check << std::endl;
+    //     }
 
     // for(int i = 0; i < Nr; i++){
     //     for(int j = 0; j < Nth; j++){
