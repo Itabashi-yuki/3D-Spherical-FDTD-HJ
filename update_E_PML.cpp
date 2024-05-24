@@ -19,6 +19,7 @@ void update_Er_PML(double ****Erth1, double ****Erth2, double ****Erph, double *
         }
     }
 
+
     for(int i = 0; i < Nr; i++){
         for(int j = 1; j <= Nth - 1; j++){
             for(int k = Nph - PML_L; k <= Nph - 1; k++){
@@ -68,7 +69,7 @@ void update_Er_PML(double ****Erth1, double ****Erth2, double ****Erph, double *
     }
 
     for(int i = PML_L; i < Nr - PML_L; i++){
-        for(int j = Nth - PML_L; j <= Nph - 1; j++){
+        for(int j = Nth - PML_L; j <= Nth - 1; j++){
             for(int k = PML_L + 1; k <= Nph - PML_L - 1; k++){
                 Erth1[NEW][i][j][k] = CERTH1_00[j] * Erth1[OLD][i][j][k] + CERTH1_01[j] / r(i + 0.5) / dth / EPS0 * ( Hph[OLD][i][j][k] - Hph[OLD][i][j-1][k] );
                 Erth2[NEW][i][j][k] = Erth2[OLD][i][j][k] + dt * cot(theta(j)) / 2.0 / r(i + 0.5) / EPS0 * ( Hph[OLD][i][j][k] + Hph[OLD][i][j-1][k] );
@@ -78,6 +79,7 @@ void update_Er_PML(double ****Erth1, double ****Erth2, double ****Erph, double *
             }
         }
     }   
+    // exit(0);
 }
 
 void update_Eth_PML(double ****Ethph, double ****Ethr, double ****Ethr_tilde, double ****Eth, double ***Hr, double ***Hph_tilde, double *CETHPH_00, double *CETHPH_01,
@@ -93,6 +95,7 @@ void update_Eth_PML(double ****Ethph, double ****Ethr, double ****Ethr_tilde, do
                 Ethr[NEW][i][j][k] = CETHR_10[i] * Ethr[OLD][i][j][k] + CETHR_11[i] / dt * ( Ethr_tilde[NEW][i][j][k] - Ethr_tilde[OLD][i][j][k] );
                 Eth[NEW][i][j][k] = Ethph[NEW][i][j][k] + Ethr[NEW][i][j][k];
                 // check[NEW][i][j][k] += 1.0;
+
             }
         }
     }
@@ -146,7 +149,7 @@ void update_Eth_PML(double ****Ethph, double ****Ethr, double ****Ethr_tilde, do
     }
 
     for(int i = PML_L + 1; i <= Nr - PML_L - 1; i++){
-        for(int j = Nth - PML_L; j < Nph; j++){
+        for(int j = Nth - PML_L; j < Nth; j++){
             for(int k = PML_L + 1; k <= Nph - PML_L - 1; k++){
                 Ethph[NEW][i][j][k] = CETHPH_00[k] * Ethph[OLD][i][j][k] + CETHPH_01[k] / r(i) / std::sin(theta(j+0.5)) / dph / EPS0 * ( Hr[i][j][k] - Hr[i][j][k-1] );
                 Ethr_tilde[NEW][i][j][k] = CETHR_TILDE_00[i] * Ethr_tilde[OLD][i][j][k] - CETHR_TILDE_01[i] / dr / EPS0 * ( Hph_tilde[i][j][k] - Hph_tilde[i-1][j][k] );
@@ -224,7 +227,7 @@ void update_Eph_PML(double ****Ephr, double ****Ephr_tilde, double ****Ephth, do
     }
 
     for(int i = PML_L + 1; i <= Nr - PML_L - 1; i++){
-        for(int j = Nth - PML_L; j <= Nph - 1; j++){
+        for(int j = Nth - PML_L; j <= Nth - 1; j++){
             for(int k = PML_L; k < Nph - PML_L; k++){
                 Ephth[NEW][i][j][k] = CEPHTH_00[j] * Ephth[OLD][i][j][k] - CEPHTH_01[j] / r(i) / dth / EPS0 * ( Hr[i][j][k] - Hr[i][j-1][k] );
                 Ephr_tilde[NEW][i][j][k] = CEPHR_TILDE_00[i] * Ephr_tilde[OLD][i][j][k] + CEPHR_TILDE_01[i] / dr / EPS0 * ( Hth_tilde[i][j][k] - Hth_tilde[i-1][j][k] );

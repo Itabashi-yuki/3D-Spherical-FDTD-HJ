@@ -32,44 +32,44 @@ int main(){
     double ****Hphr_tilde = allocate_4d(2, Nr, Nth, Nph + 1, 0.0);
     double ***Hphth = allocate_3d(Nr, Nth, Nph + 1, 0.0);
 
-    double *CERTH1_00 = allocate_1d(Nr, 0.0);
-    double *CERTH1_01 = allocate_1d(Nr, 0.0);
-    double *CERPH_00 = allocate_1d(Nr, 0.0);
-    double *CERPH_01 = allocate_1d(Nr, 0.0);
-    double *CETHPH_00 = allocate_1d(Nth, 0.0);
-    double *CETHPH_01 = allocate_1d(Nth, 0.0);
-    double *CETHR_10 = allocate_1d(Nth, 0.0);
-    double *CETHR_11 = allocate_1d(Nth, 0.0);
-    double *CETHR_TILDE_00 = allocate_1d(Nth, 0.0);
-    double *CETHR_TILDE_01 = allocate_1d(Nth, 0.0);
-    double *CEPHR_TILDE_00 = allocate_1d(Nph, 0.0);
-    double *CEPHR_TILDE_01 = allocate_1d(Nph, 0.0);
-    double *CEPHR_10 = allocate_1d(Nph, 0.0);
-    double *CEPHR_11 = allocate_1d(Nph, 0.0);
-    double *CEPHTH_00 = allocate_1d(Nph, 0.0);
-    double *CEPHTH_01 = allocate_1d(Nph, 0.0);
-    double *CETH_TILDE_00 = allocate_1d(Nth, 0.0);
-    double *CETH_TILDE_01 = allocate_1d(Nth, 0.0);
-    double *CEPH_TILDE_00 = allocate_1d(Nph, 0.0);
-    double *CEPH_TILDE_01 = allocate_1d(Nph, 0.0);
-    double *CHRTH1_00 = allocate_1d(Nr, 0.0);
-    double *CHRTH1_01 = allocate_1d(Nr, 0.0);
-    double *CHRPH_00 = allocate_1d(Nr, 0.0);
-    double *CHRPH_01 = allocate_1d(Nr, 0.0);
-    double *CHTHPH_00 = allocate_1d(Nth, 0.0);
-    double *CHTHPH_01 = allocate_1d(Nth, 0.0);
-    double *CHTHR_TILDE_00 = allocate_1d(Nth, 0.0);
-    double *CHTHR_TILDE_01 = allocate_1d(Nth, 0.0);
-    double *CHTHR_10 = allocate_1d(Nth, 0.0);
-    double *CHTHR_11 = allocate_1d(Nth, 0.0);
-    double *CHPHTH_00 = allocate_1d(Nph, 0.0);
-    double *CHPHTH_01= allocate_1d(Nph, 0.0);
-    double *CHPHR_TILDE_00 = allocate_1d(Nph, 0.0);
-    double *CHPHR_TILDE_01 = allocate_1d(Nph, 0.0);
-    double *CHPHR_10 = allocate_1d(Nph, 0.0);
-    double *CHPHR_11 = allocate_1d(Nph, 0.0);
-    double *CHTH_TILDE = allocate_1d(Nth, 0.0);
-    double *CHPH_TILDE = allocate_1d(Nph, 0.0);
+    double *CERTH1_00 = allocate_1d(Nth, 0.0);
+    double *CERTH1_01 = allocate_1d(Nth, 0.0);
+    double *CERPH_00 = allocate_1d(Nph, 0.0);
+    double *CERPH_01 = allocate_1d(Nph, 0.0);
+    double *CETHPH_00 = allocate_1d(Nph, 0.0);
+    double *CETHPH_01 = allocate_1d(Nph, 0.0);
+    double *CETHR_10 = allocate_1d(Nr, 0.0);
+    double *CETHR_11 = allocate_1d(Nr, 0.0);
+    double *CETHR_TILDE_00 = allocate_1d(Nr, 0.0);
+    double *CETHR_TILDE_01 = allocate_1d(Nr, 0.0);
+    double *CEPHR_TILDE_00 = allocate_1d(Nr, 0.0);
+    double *CEPHR_TILDE_01 = allocate_1d(Nr, 0.0);
+    double *CEPHR_10 = allocate_1d(Nr, 0.0);
+    double *CEPHR_11 = allocate_1d(Nr, 0.0);
+    double *CEPHTH_00 = allocate_1d(Nth, 0.0);
+    double *CEPHTH_01 = allocate_1d(Nth, 0.0);
+    double *CETH_TILDE_00 = allocate_1d(Nr, 0.0);
+    double *CETH_TILDE_01 = allocate_1d(Nr, 0.0);
+    double *CEPH_TILDE_00 = allocate_1d(Nr, 0.0);
+    double *CEPH_TILDE_01 = allocate_1d(Nr, 0.0);
+    double *CHRTH1_00 = allocate_1d(Nth, 0.0);
+    double *CHRTH1_01 = allocate_1d(Nth, 0.0);
+    double *CHRPH_00 = allocate_1d(Nph, 0.0);
+    double *CHRPH_01 = allocate_1d(Nph, 0.0);
+    double *CHTHPH_00 = allocate_1d(Nph, 0.0);
+    double *CHTHPH_01 = allocate_1d(Nph, 0.0);
+    double *CHTHR_TILDE_00 = allocate_1d(Nr, 0.0);
+    double *CHTHR_TILDE_01 = allocate_1d(Nr, 0.0);
+    double *CHTHR_10 = allocate_1d(Nr, 0.0);
+    double *CHTHR_11 = allocate_1d(Nr, 0.0);
+    double *CHPHTH_00 = allocate_1d(Nth, 0.0);
+    double *CHPHTH_01= allocate_1d(Nth, 0.0);
+    double *CHPHR_TILDE_00 = allocate_1d(Nr, 0.0);
+    double *CHPHR_TILDE_01 = allocate_1d(Nr, 0.0);
+    double *CHPHR_10 = allocate_1d(Nr, 0.0);
+    double *CHPHR_11 = allocate_1d(Nr, 0.0);
+    double *CHTH_TILDE = allocate_1d(Nr, 0.0);
+    double *CHPH_TILDE = allocate_1d(Nr, 0.0);
 
     double ****check = allocate_4d(2, Nr+1, Nth+1, Nph+1, 0.0);
 
@@ -78,7 +78,6 @@ int main(){
                      CEPHR_10, CEPHR_11, CEPHR_TILDE_00, CEPHR_TILDE_01, CEPHTH_00, CEPHTH_01, CETH_TILDE_00, CETH_TILDE_01, CEPH_TILDE_00,
                       CEPH_TILDE_01, CHRTH1_00, CHRTH1_01,CHRPH_00, CHRPH_01, CHTHPH_00, CHTHPH_01, CHTHR_TILDE_00,CHTHR_TILDE_01, CHTHR_10,
                        CHTHR_11, CHPHTH_00,CHPHTH_01, CHPHR_TILDE_00, CHPHR_TILDE_01, CHPHR_10, CHPHR_11, CHTH_TILDE, CHPH_TILDE);
-
     // exit(0);
     // std::ofstream ofs("./data/" + global_dirName + "/Coefficient.dat");
     // for(int i = 0; i < Nr; i++){
@@ -99,6 +98,7 @@ int main(){
         update_Eth(Eth, Hr, Hph, check, n);
         update_Eph(Eph, Hr, Hth, check, n);
         update_Er_PML(Erth1, Erth2, Erph, Er, Hr, Hth, Hph, CERTH1_00, CERTH1_01, CERPH_00, CERPH_01, check, n);
+        // exit(0);
     // exit(0);
         update_Eth_PML(Ethph, Ethr, Ethr_tilde, Eth, Hr, Hph_tilde, CETHPH_00, CETHPH_01,
                          CETHR_10, CETHR_11, CETHR_TILDE_00, CETHR_TILDE_01, check, n);

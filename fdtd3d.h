@@ -13,9 +13,9 @@ constexpr double B0 { 50000e-9 };
 constexpr double R0 { 6370.0e3 }; /* Radius of the Earth */
 
 /* 解析領域 */
-constexpr double Rr { 50.0e3 };
-constexpr double Rth { 50.0e3 };
-constexpr double Rph { 50.0e3 };
+constexpr double Rr { 25.0e3 };
+constexpr double Rth { 150.0e3 };
+constexpr double Rph { 100.0e3 };
 constexpr double dr { 0.5e3 };
 constexpr double Rdth { 0.5e3 };
 constexpr double Rdph { 0.5e3 };
