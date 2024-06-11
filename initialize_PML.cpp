@@ -4,22 +4,38 @@
 
 double PML_sigma_r(double i){
     double sigma_max = - (PML_M + 1.0) * C0 / 2.0 / PML_L / dr * std::log(PML_R);
+    sigma_max = 0.0;
     return sigma_max * std::pow((PML_L - i) * dr / PML_L / dr, PML_M);
 }
 
 double PML_sigma_th(double j){
     double sigma_max = - (PML_M + 1.0) * C0 / 2.0 / PML_L / (R0 * dth) * std::log(PML_R);
+    sigma_max = 0.0;
     return sigma_max * std::pow((PML_L - j) / PML_L, PML_M);
 }
 
 double PML_sigma_ph(double k){
     double sigma_max = - (PML_M + 1.0) * C0 / 2.0 / PML_L / (R0 * dph) * std::log(PML_R);
+    sigma_max = 0.0;
     return sigma_max * std::pow((PML_L - k) / PML_L, PML_M);
 }
 
 
 double PML_sigma_r_tilde(double i){
     double sigma_max = - (PML_M + 1.0) * C0 / 2.0 / PML_L / dr * std::log(PML_R);
+    sigma_max = 0.0;
+
+    // int N = 10000;
+    // double Rmax = PML_L * dr;
+    // double Rmin = i * dr;
+    // double Dr = (Rmax - Rmin) / N;
+    // double sigma_r_tilde = 0.0;
+    // for(int n = 0; n <= N; n++){
+    //     // double r = Rmin + i * Dr;
+    //     sigma_r_tilde += PML_sigma_r(i) * Dr;
+    // }
+
+    // return sigma_r_tilde;
     return sigma_max * ( PML_L * dr / (PML_M + 1.0)) * std::pow(( (PML_L - i) / PML_L ), (PML_M + 1.0));
 }
 
@@ -118,15 +134,32 @@ void initialize_PML(double *CERTH1_00, double *CERTH1_01, double *CERPH_00, doub
         sigma_r_tilde_H[i] = PML_sigma_r_tilde(Nr - (i + 0.5));
     }
 
-    
-    std::ofstream ofs_sigma("./data/" + global_dirName + "/sigma.dat");
-    ofs_sigma << "#sigma_r_E, sigma_th_E, sigma_ph_E, sigma_r_H, sigma_th_H, sigma_ph_H, sigma_r_tilde_E, sigma_r_tilde_H" << std::endl;
-    for(int j = 0; j < Nth; j++){
-        ofs_sigma << j << " " << sigma_r_E[j] << " " << sigma_th_E[j] << " " << sigma_ph_E[j] << " " << sigma_r_H[j] << " " << sigma_th_H[j] << " " 
-                    << sigma_ph_H[j] << " " << sigma_r_tilde_E[j] << " " << sigma_r_tilde_H[j] << std::endl;
-    }
+   std::ofstream ofs_sigma_i("./data/" + global_dirName + "/sigma_i.dat");
+    ofs_sigma_i << "#sigma_r_E, sigma_r_tilde_E, sigma_r_H" << std::endl;
+    for(int i = 0; i < Nr; i++){
+        ofs_sigma_i << i << " " << sigma_r_E[i] << " " << sigma_r_tilde_E[i] << " " << sigma_r_H[i] << " " << sigma_r_tilde_H[i] << std::endl;
+    } 
 
-    ofs_sigma.close();
+    // std::ofstream ofs_sigma_j("./data/" + global_dirName + "/sigma_j.dat");
+    // ofs_sigma_j << "#sigma_th_E, sigma_th_H" << std::endl;
+    // for(int j = 0; j < Nth; j++){
+    //     ofs_sigma_j << j << " " << sigma_th_E[j] << " " << sigma_th_H[j] << std::endl;
+    // }
+
+    // std::ofstream ofs_sigma_k("./data/" + global_dirName + "/sigma_k.dat");
+    // ofs_sigma_k << "#sigma_ph_E, sigma_ph_H" << std::endl;
+    // for(int k = 0; k < Nph; k++){
+    //     ofs_sigma_k << k << " " << sigma_ph_E[k] << " " << sigma_ph_H[k] << std::endl;
+    // }
+
+    // for(int j = 0; j < Nth; j++){
+    //     ofs_sigma << j << " " << sigma_r_E[j] << " " << sigma_th_E[j] << " " << sigma_ph_E[j] << " " << sigma_r_H[j] << " " << sigma_th_H[j] << " " 
+    //                 << sigma_ph_H[j] << " " << sigma_r_tilde_E[j] << " " << sigma_r_tilde_H[j] << std::endl;
+    // }
+
+    // ofs_sigma_i.close();
+    // ofs_sigma_j.close();
+    // ofs_sigma_k.close();
     // exit(0);
     for(int j = 1; j <= Nth - 1; j++){
         CERTH1_00[j] = PML_C00(sigma_th_E[j]);
@@ -170,12 +203,10 @@ void initialize_PML(double *CERTH1_00, double *CERTH1_01, double *CERPH_00, doub
 
     for(int i = 1; i <= Nr - 1; i++){
         CETH_TILDE_00[i] = dt * sigma_r_tilde_E[i] / 2.0;
-        CETH_TILDE_01[i] = dt * sigma_r_tilde_E[i] / 2.0;
     }
 
     for(int i = 1; i <= Nr - 1; i++){
         CEPH_TILDE_00[i] = dt * sigma_r_tilde_E[i] / 2.0;
-        CEPH_TILDE_01[i] = dt * sigma_r_tilde_E[i] / 2.0;
     }
 
     for(int j = 0; j < Nth; j++){
@@ -223,15 +254,29 @@ void initialize_PML(double *CERTH1_00, double *CERTH1_01, double *CERPH_00, doub
         CHPH_TILDE[i] = sigma_r_tilde_H[i] * dt / 2.0;
     }
 
-    std::ofstream ofs_C("./data/" + global_dirName + "/C.dat");
-    ofs_C << "#CERTH1_00, CERTH1_01, CERPH_00, CERPH_01, CETHPH_00, CETHPH_01, CETHR_10, CETHR_11, CETHR_TILDE_00, CETHR_TILDE_01, CEPHR_10, CEPHR_11, CHTHR_10, CHTHR_11" << std::endl;
+    std::ofstream ofs_C_i("./data/" + global_dirName + "/C_i.dat");
+    ofs_C_i << "#CETHR_10, CETHR_11, CETHR_TILDE_00, CETHR_TILDE_01, CEPHR_10, CEPHR_11, CEPHR_TILDE_00, CEPHR_TILDE_01, CETH_TILDE_00, CEPH_TILDE_00, CHTHR_10, CHTHR_11, CHTHR_TILDE_00, CHTHR_TILDE_01, CHPHR_10, CHPHR_11, CHPHR_TILDE_00, CHPHR_TILDE_01, CHTH_TILDE, CHPH_TILDE" << std::endl;
     for(int i = 0; i < Nr; i++){
-        ofs_C << i << " " << CERTH1_00[i] << " " << CERTH1_01[i] << " " << CERPH_00[i] << " " << CERPH_01[i] << " " 
-                << CETHPH_00[i] << " " << CETHPH_01[i] << " " << CETHR_10[i] << " " << CETHR_11[i] << " "
-                << CETHR_TILDE_00[i] << " " << CETHR_TILDE_01[i] << " " << CEPHR_10[i] << " " << CEPHR_11[i] 
-                << " " << CHTHR_10[i] << " " << CHTHR_11[i]  << std::endl;
-
+        ofs_C_i << i << " " << CETHR_10[i] << " " << CETHR_11[i] << " " << CETHR_TILDE_00[i] << " " << CETHR_TILDE_01[i] << " " << CEPHR_10[i] << " " << CEPHR_11[i] 
+                << " " << CEPHR_TILDE_00[i] << " " << CEPHR_TILDE_01[i] << " " << CETH_TILDE_00[i] << " " << CEPH_TILDE_00[i] <<  CHTHR_10[i] << " " << CHTHR_11[i] 
+                << " " << CHTHR_TILDE_00[i] << " " << CHTHR_TILDE_01[i] << " " << CHPHR_10[i] << " " << CHPHR_11[i] << " " << CHPHR_TILDE_00[i] << " " << CHPHR_TILDE_01[i] 
+                << " " << CHTH_TILDE[i] << " " << CHPH_TILDE[i] << std::endl;
     }
+
+    // std::ofstream ofs_C_j("./data/" + global_dirName + "/C_j.dat");
+    // ofs_C_j << "#CERTH1_00, CERTH1_01, CEPHTH_00, CEPHTH_01, CHRTH1_00, CHRTH1_01, CHPHTH_00, CHPHTH_01" << std::endl;
+    // for(int j = 0; j < Nth; j++){
+    //     ofs_C_j << j << " " << CERTH1_00[j] << " " << CERTH1_01[j] << " " << CEPHTH_00[j] << " " << CEPHTH_01[j] << " " << CHRTH1_00[j] << " " << CHRTH1_01[j]
+    //                 << " " << CHPHTH_00[j] << " " << CHPHTH_01[j] << std::endl;
+    // } 
+
+    // std::ofstream ofs_C_k("./data/" + global_dirName + "/C_k.dat");
+    // ofs_C_k << "#CERPH_00, CERPH_01, CETHPH_00, CETHPH_01, CHRPH_00, CHRPH_01, CHTHPH_00, CHTHPH_01" << std::endl;
+    // for(int k = 0; k < Nph; k++){
+    //     ofs_C_k << k << " " << CERPH_00[k] << " " << CERPH_01[k] << " " << CETHPH_00[k] << " " << CETHPH_01[k] << " " << CHRPH_00[k] << " " << CHRPH_01[k]
+    //                 << " " << CHTHPH_00[k] << " " << CHTHPH_01[k] << std::endl;
+    // }
+
 
     // exit(0);
 

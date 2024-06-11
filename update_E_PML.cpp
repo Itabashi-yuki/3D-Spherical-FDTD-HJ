@@ -10,9 +10,12 @@ void update_Er_PML(double ****Erth1, double ****Erth2, double ****Erph, double *
     for(int i = 0; i < Nr; i++){
         for(int j = 1; j <= Nth - 1; j++){
             for(int k = 1; k <= PML_L; k++){
-                Erth1[NEW][i][j][k] = CERTH1_00[j] * Erth1[OLD][i][j][k] + CERTH1_01[j] / r(i + 0.5) / dth / EPS0 * ( Hph[OLD][i][j][k] - Hph[OLD][i][j-1][k] );
-                Erth2[NEW][i][j][k] = Erth2[OLD][i][j][k] + dt * cot(theta(j)) / 2.0 / r(i + 0.5) / EPS0 * ( Hph[OLD][i][j][k] + Hph[OLD][i][j-1][k] );
-                Erph[NEW][i][j][k] = CERPH_00[k] * Erph[OLD][i][j][k] - CERPH_01[k] / r(i + 0.5) / std::sin(theta(j)) / dph / EPS0 * ( Hth[OLD][i][j][k] - Hth[OLD][i][j][k-1] );
+                Erth1[NEW][i][j][k] = CERTH1_00[j] * Erth1[OLD][i][j][k] + CERTH1_01[j] / r(i + 0.5) / dth / EPS0 
+                                    * ( Hph[OLD][i][j][k] - Hph[OLD][i][j-1][k] );
+                Erth2[NEW][i][j][k] = Erth2[OLD][i][j][k] + dt * cot(theta(j)) / 2.0 / r(i + 0.5) / EPS0 
+                                    * ( Hph[OLD][i][j][k] + Hph[OLD][i][j-1][k] );
+                Erph[NEW][i][j][k] = CERPH_00[k] * Erph[OLD][i][j][k] - CERPH_01[k] / r(i + 0.5) / std::sin(theta(j)) / dph / EPS0 
+                                    * ( Hth[OLD][i][j][k] - Hth[OLD][i][j][k-1] );
                 Er[i][j][k] = Erth1[NEW][i][j][k] + Erth2[NEW][i][j][k] + Erph[NEW][i][j][k];
                 // check[NEW][i][j][k] += 1.0;
             }

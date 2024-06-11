@@ -85,9 +85,10 @@ int main(){
     // }
     // exit(0);
     // int n0 = cal_obs_n0();
-    int n0 = 2;
+    int n0 = 1;
 
     std::ofstream ofs_obs("./data/" + global_dirName +"/obs.dat",std::ios::app);
+    // ofs_obs << "r方向 + 5km, th方向 + 5km, ph方向 + 5km " << std::endl;
     for(int n = 1; n < Nt; n++){
         int NEW = n % 2;
         if(n % 10 == 0)
@@ -98,8 +99,6 @@ int main(){
         update_Eth(Eth, Hr, Hph, check, n);
         update_Eph(Eph, Hr, Hth, check, n);
         update_Er_PML(Erth1, Erth2, Erph, Er, Hr, Hth, Hph, CERTH1_00, CERTH1_01, CERPH_00, CERPH_01, check, n);
-        // exit(0);
-    // exit(0);
         update_Eth_PML(Ethph, Ethr, Ethr_tilde, Eth, Hr, Hph_tilde, CETHPH_00, CETHPH_01,
                          CETHR_10, CETHR_11, CETHR_TILDE_00, CETHR_TILDE_01, check, n);
         update_Eph_PML(Ephr, Ephr_tilde, Ephth, Eph, Hr, Hth_tilde, CEPHR_10, CEPHR_11,
@@ -108,6 +107,7 @@ int main(){
         update_Eph_tilde(Eph_tilde, Eph, CEPH_TILDE_00, check,  n);
 
         Er[int((source_r) / dr)][int((source_th) / Rdth)][int((source_ph) / Rdph)] -= dt / EPS0 * Jr(t);
+
         update_Hr(Hr, Eth, Eph, check, n);
         update_Hth(Hth, Er, Eph, check, n);
         update_Hph(Hph, Er, Eth, check, n);
@@ -120,8 +120,8 @@ int main(){
         update_Hph_PML(Hph, Hphr, Hphth, Hphr_tilde, Er, Eth_tilde,
                          CHPHTH_00, CHPHTH_01, CHPHR_TILDE_00, CHPHR_TILDE_01,
                           CHPHR_10, CHPHR_11, check, n);
-        update_Hth_tilde(Hth_tilde, Hth, CHTH_TILDE, n);
-        update_Hph_tilde(Hph_tilde, Hph, CHPH_TILDE, n);
+        update_Hth_tilde(Hth_tilde, Hth, CHTH_TILDE, check, n);
+        update_Hph_tilde(Hph_tilde, Hph, CHPH_TILDE, check,n);
 
         // std::ofstream ofs("./data/" + global_dirName + "/E_PML_" + std::to_string(n) + ".dat");
         // for(int k = 0; k <= Nph; k+=2){
@@ -131,7 +131,9 @@ int main(){
 
         output_E(Er, Eth, Eph, Hr, Hth, Hph, n, n0);
 
-        ofs_obs << n * dt << " " << Er[int(obs_r / dr)][int(obs_th / Rdth)][int(obs_ph / Rdph)] << std::endl;
+        ofs_obs << n * dt << " " << Eth[NEW][int(35.0e3 / dr)][int(source_th/ Rdth)][int(source_ph / Rdph)]
+                            << " " << Eth[NEW][int(source_r / dr)][int( 35.0e3 / Rdth)][int(source_ph / Rdph)]
+                            << " " << Eth[NEW][int(obs_r / dr)][int(obs_th / Rdth)][int( obs_ph / Rdph)] << std::endl;
     }
 
     // std::ofstream ofs_check("./data/"+ global_dirName + "/check.dat");

@@ -13,9 +13,12 @@ constexpr double B0 { 50000e-9 };
 constexpr double R0 { 6370.0e3 }; /* Radius of the Earth */
 
 /* 解析領域 */
-constexpr double Rr { 25.0e3 };
-constexpr double Rth { 150.0e3 };
-constexpr double Rph { 100.0e3 };
+// constexpr double Rr { 50.0e3 };
+// constexpr double Rth { 100.0e3 };
+// constexpr double Rph { 150.0e3 };
+constexpr double Rr { 100.0e3 };
+constexpr double Rth { 50.0e3 };
+constexpr double Rph { 50.0e3 };
 constexpr double dr { 0.5e3 };
 constexpr double Rdth { 0.5e3 };
 constexpr double Rdph { 0.5e3 };
@@ -30,18 +33,19 @@ constexpr int Nph { int(Rph / Rdph) };
 
 constexpr double dt { 0.9 / C0 / sqrt( 1.0 / dr / dr + 1.0 / (R0 * dth) / (R0 * dth) 
                         + 1.0 / (R0 * std::sin(M_PI / 2.0 - thR / 2.0) * dph) / (R0 * std::sin(M_PI / 2.0 - thR / 2.0) * dph)  ) };
-constexpr double Tmax { 0.0002 };
+constexpr double Tmax { 0.0005 };
 constexpr int Nt { int(Tmax / dt) };
 
 /* PMLパラメタ */
-constexpr int PML_L { 10 };
+constexpr int PML_L { 12 };
 // constexpr int PML_L { 0 };
-constexpr double PML_M { 3.7 };
+constexpr double PML_M { 4.0 };
 constexpr double PML_R { 1.0e-6 };
 
 /* 電流源パラメタ */
+constexpr double f0 { 40.0e3 };
 constexpr double sigma_J { 12 * dt };
-constexpr double t0 { 6.0 * sigma_J };
+constexpr double t0 { 5.0 * sigma_J };
 constexpr double source_r { Rr / 2.0 };
 constexpr double source_th { Rth / 2.0 };
 // constexpr double source_ph { Rph / 2.0  + 10.0e3 };
@@ -50,7 +54,8 @@ constexpr double source_ph { Rph / 2.0 };
 /*観測パラメタ*/
 constexpr double obs_r { source_r };
 constexpr double obs_th { source_th };
-constexpr double obs_ph { source_ph + 5.0e3 };
+// constexpr double obs_ph { 140.0e3 };
+constexpr double obs_ph { source_ph + 10.0e3 };
 constexpr double obs_t_step{ 1.0e-3 };
 
 void update_Er(double ***Er, double ****Hth, double ****Hph, double ****check, int n);
@@ -75,8 +80,8 @@ void update_Hth_PML(double ****Hth, double ***Hthr, double ***Hthph, double ****
                  double *CHTHPH_01, double *CHTHR_TILDE_00, double *CHTHR_TILDE_01, double *CHTHR_10, double *CHTHR_11, double ****check, int n);
 void update_Hph_PML(double ****Hph, double ***Hphr, double ***Hphth, double ****Hphr_tilde, double ***Er, double ****Eth_tilde,
                      double *CHPHTH_00, double *CHPHTH_01, double *CHPHR_TILDE_00, double *CHPHR_TILDE_01, double *CHPHR_10, double *CHPHR_11, double ****check, int n);
-void update_Hth_tilde(double ***Hth_tilde, double ****Hth, double *CHTH_TILDE, int n);
-void update_Hph_tilde(double ***Hph_tilde, double ****Hph, double *CHPH_TILDE, int n);
+void update_Hth_tilde(double ***Hth_tilde, double ****Hth, double *CHTH_TILDE, double ****check, int n);
+void update_Hph_tilde(double ***Hph_tilde, double ****Hph, double *CHPH_TILDE, double ****chcek, int n);
 
 double PML_sigma_r(double i);
 // double PML_sigma_r_0(double i);
