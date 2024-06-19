@@ -31,5 +31,8 @@ void output_pal(){
     ofs_pal << "PML_R = " << PML_R << std::endl;
     ofs_pal << "PML_M = " << PML_M << std::endl;
 
+    ofs_pal << "B0 = " << B0 << std::endl;
+
+
     ofs_pal.close();
 }

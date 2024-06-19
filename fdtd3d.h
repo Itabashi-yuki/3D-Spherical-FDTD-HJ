@@ -18,9 +18,9 @@ constexpr double R0 { 6370.0e3 }; /* Radius of the Earth */
 // constexpr double Rph { 150.0e3 };
 
 
-constexpr double Rr { 70.0e3 };
-constexpr double Rth { 80.0e3 };
-constexpr double Rph { 90.0e3 };
+constexpr double Rr { 50.0e3 };
+constexpr double Rth { 50.0e3 };
+constexpr double Rph { 100.0e3 };
 constexpr double dr { 0.5e3 };
 constexpr double Rdth { 0.5e3 };
 constexpr double Rdph { 0.5e3 };
@@ -50,11 +50,28 @@ constexpr double sigma_J { 12 * dt };
 constexpr double t0 { 5.0 * sigma_J };
 constexpr double source_r { Rr / 2.0 };
 constexpr double source_th { Rth / 2.0 };
-constexpr double source_ph { Rph / 2.0 };
+constexpr double source_ph { Rph / 4.0 };
 // constexpr double source_ph { Rph / 2.0  + 10.0e3 };
 // constexpr double source_r { 25.0e3 };
 // constexpr double source_th { 35.0e3 };
 // constexpr double source_ph { 45.0e3 };
+
+/* プラズマ領域パラメタ */
+constexpr double Rr_iono_lower { 20.0e3 };
+constexpr double Rr_iono_upper { 30.0e3 };
+constexpr double Rth_iono_lower { 20.0e3 };
+constexpr double Rth_iono_upper { 30.0e3 };
+constexpr double Rph_iono_lower { 70.0e3 };
+constexpr double Rph_iono_upper { 80.0e3 };
+constexpr int Nr_iono_lower { int(Rr_iono_lower / dr) };
+constexpr int Nr_iono_upper { int(Rr_iono_upper / dr) };
+constexpr int Nth_iono_lower { int(Rth_iono_lower / Rdth)};
+constexpr int Nth_iono_upper { int(Rth_iono_upper / Rdth)};
+constexpr int Nph_iono_lower { int(Rph_iono_lower / Rdph)};
+constexpr int Nph_iono_upper { int(Rph_iono_upper / Rdph)};
+
+constexpr double THETA { M_PI / 2.0 };
+constexpr double PHI { 0.0 };
 
 /*観測パラメタ*/
 constexpr double obs_r { source_r };
@@ -63,9 +80,9 @@ constexpr double obs_th { source_th };
 constexpr double obs_ph { source_ph + 10.0e3 };
 constexpr double obs_t_step{ 1.0e-3 };
 
-void update_Er(double ***Er, double ****Hth, double ****Hph, double ****check, int n);
-void update_Eth(double ****Eth, double ***Hr, double ****Hph, double ****check, int n);
-void update_Eph(double ****Eph, double ***Hr, double ****Hth, double ****check, int n);
+void update_Er(double ***Er, double ****Hth, double ****Hph, double ****Jr, double ****check, int n);
+void update_Eth(double ****Eth, double ***Hr, double ****Hph, double ****Jth, double ****check, int n);
+void update_Eph(double ****Eph, double ***Hr, double ****Hth, double ****Jph, double ****check, int n);
 void update_Er_PML(double ****Erth1, double ****Erth2, double ****Erph, double ***Er, double ***Hr, double ****Hth, double ****Hph,
                      double *CERTH1_00, double *CERTH1_01, double *CERPH_00, double *CERPH_01, double ****check, int n);
 void update_Eth_PML(double ****Ethph, double ****Ethr, double ****Ethr_tilde, double ****Eth, double ***Hr, double ***Hph_tilde, double *CETHPH_00, double *CETHPH_01,
@@ -88,6 +105,10 @@ void update_Hph_PML(double ****Hph, double ***Hphr, double ***Hphth, double ****
 void update_Hth_tilde(double ***Hth_tilde, double ****Hth, double *CHTH_TILDE, double ****check, int n);
 void update_Hph_tilde(double ***Hph_tilde, double ****Hph, double *CHPH_TILDE, double ****chcek, int n);
 
+void update_Jr(double ****Jr, double ****Jth, double ****Jph, double ***Er, double ****Eth, double ****Eph, Eigen::Matrix3d ***S, Eigen::Matrix3d ***B, int n);
+void update_Jth(double ****Jr, double ****Jth, double ****Jph, double ***Er, double ****Eth, double ****Eph, Eigen::Matrix3d ***S, Eigen::Matrix3d ***B, int n);
+void update_Jph(double ****Jr, double ****Jth, double ****Jph, double ***Er, double ****Eth, double ****Eph, Eigen::Matrix3d ***S, Eigen::Matrix3d ***B, int n);
+
 double PML_sigma_r(double i);
 // double PML_sigma_r_0(double i);
 // double PML_sigma_r_1(double i);
@@ -107,7 +128,11 @@ void initialize_PML(double *CERTH1_00, double *CERTH1_01, double *CERPH_00, doub
                      double *CHTHPH_01, double *CHTHR_TILDE_00, double *CHTHR_TILDE_01, double *CHTHR_10, double *CHTHR_11,
                      double *CHPHTH_00, double *CHPHTH_01, double *CHPHR_TILDE_00, double *CHPHR_TILDE_01, double *CHPHR_10, double *CHPHR_11, double *CHTH_TILDE, double *CHPH_TILDE);
 
-double Jr(double t);
+double source_J(double t);
+double cal_Ne(double exp_Ne);
+double cal_nu(double exp_nu);
+void initialize_Plasma(Eigen::Matrix3d ***S, Eigen::Matrix3d ***B);
+
 double **** allocate_4d(int dim1, int dim2, int dim3, int dim4, double initial_Value);
 double *** allocate_3d(int dim1, int dim2, int dim3, double initial_Value);
 double ** allocate_2d(int dim1, int dim2, double initial_Value);

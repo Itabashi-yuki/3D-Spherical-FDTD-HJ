@@ -1,6 +1,7 @@
 #include "fdtd3d.h"
 #include <iostream>
 #include <fstream>
+#include <eigen3/Eigen/Dense>
 
 int main(){
     double ****Erth1 = allocate_4d(2, Nr, Nth + 1, Nph + 1, 0.0);
@@ -31,6 +32,9 @@ int main(){
     double ***Hphr = allocate_3d(Nr, Nth, Nph + 1, 0.0);
     double ****Hphr_tilde = allocate_4d(2, Nr, Nth, Nph + 1, 0.0);
     double ***Hphth = allocate_3d(Nr, Nth, Nph + 1, 0.0);
+    double ****Jr = allocate_4d(2, Nr, Nth + 1, Nph + 1, 0.0);
+    double ****Jth = allocate_4d(2, Nr + 1, Nth, Nph + 1, 0.0);
+    double ****Jph = allocate_4d(2, Nr + 1, Nth + 1, Nph, 0.0);
 
     double *CERTH1_00 = allocate_1d(Nth, 0.0);
     double *CERTH1_01 = allocate_1d(Nth, 0.0);
@@ -71,6 +75,22 @@ int main(){
     double *CHTH_TILDE = allocate_1d(Nr, 0.0);
     double *CHPH_TILDE = allocate_1d(Nr, 0.0);
 
+    Eigen::Matrix3d ***S = new Eigen::Matrix3d **[Nr+1];
+    Eigen::Matrix3d ***B = new Eigen::Matrix3d **[Nr+1];
+
+    for(int i = 0; i < Nr+1; i++){
+            S[i] = new Eigen::Matrix3d *[Nth+1];
+            B[i] = new Eigen::Matrix3d *[Nth+1];
+        for(int j = 0; j < Nth + 1; j++){
+            S[i][j] = new Eigen::Matrix3d[Nph+1];
+            B[i][j] = new Eigen::Matrix3d[Nph+1];
+            for(int k = 0; k < Nph + 1; k++){
+                S[i][j][k] << 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0;
+                B[i][j][k] << 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0;        
+            }
+        }
+    }
+
     double ****check = allocate_4d(2, Nr+1, Nth+1, Nph+1, 0.0);
 
     make_dir();
@@ -78,6 +98,7 @@ int main(){
                      CEPHR_10, CEPHR_11, CEPHR_TILDE_00, CEPHR_TILDE_01, CEPHTH_00, CEPHTH_01, CETH_TILDE_00, CETH_TILDE_01, CEPH_TILDE_00,
                       CEPH_TILDE_01, CHRTH1_00, CHRTH1_01,CHRPH_00, CHRPH_01, CHTHPH_00, CHTHPH_01, CHTHR_TILDE_00,CHTHR_TILDE_01, CHTHR_10,
                        CHTHR_11, CHPHTH_00,CHPHTH_01, CHPHR_TILDE_00, CHPHR_TILDE_01, CHPHR_10, CHPHR_11, CHTH_TILDE, CHPH_TILDE);
+    initialize_Plasma(S, B);
     // exit(0);
     // std::ofstream ofs("./data/" + global_dirName + "/Coefficient.dat");
     // for(int i = 0; i < Nr; i++){
@@ -95,9 +116,9 @@ int main(){
             std::cout << n << " / " << Nt << std::endl;
 
         double t = dt * ( n - 0.5 );
-        update_Er(Er, Hth, Hph, check, n);
-        update_Eth(Eth, Hr, Hph, check, n);
-        update_Eph(Eph, Hr, Hth, check, n);
+        update_Er(Er, Hth, Hph, Jr, check, n);
+        update_Eth(Eth, Hr, Hph, Jth, check, n);
+        update_Eph(Eph, Hr, Hth, Jph, check, n);
         update_Er_PML(Erth1, Erth2, Erph, Er, Hr, Hth, Hph, CERTH1_00, CERTH1_01, CERPH_00, CERPH_01, check, n);
         update_Eth_PML(Ethph, Ethr, Ethr_tilde, Eth, Hr, Hph_tilde, CETHPH_00, CETHPH_01,
                          CETHR_10, CETHR_11, CETHR_TILDE_00, CETHR_TILDE_01, check, n);
@@ -106,7 +127,7 @@ int main(){
         update_Eth_tilde(Eth_tilde, Eth, CETH_TILDE_00,check, n);
         update_Eph_tilde(Eph_tilde, Eph, CEPH_TILDE_00, check,  n);
 
-        Er[int((source_r) / dr)][int((source_th) / Rdth)][int((source_ph) / Rdph)] -= dt / EPS0 * Jr(t);
+        Er[int((source_r) / dr)][int((source_th) / Rdth)][int((source_ph) / Rdph)] -= dt / EPS0 * source_J(t);
 
         update_Hr(Hr, Eth, Eph, check, n);
         update_Hth(Hth, Er, Eph, check, n);
@@ -123,17 +144,21 @@ int main(){
         update_Hth_tilde(Hth_tilde, Hth, CHTH_TILDE, check, n);
         update_Hph_tilde(Hph_tilde, Hph, CHPH_TILDE, check,n);
 
+        update_Jr(Jr, Jth, Jph, Er, Eth, Eph, S, B, n);
+        update_Jth(Jr, Jth, Jph, Er, Eth, Eph, S, B, n);
+        update_Jph(Jr, Jth, Jph, Er, Eth, Eph, S, B, n);
+
         // std::ofstream ofs("./data/" + global_dirName + "/E_PML_" + std::to_string(n) + ".dat");
         // for(int k = 0; k <= Nph; k+=2){
         //     ofs << k * R0 * dph * 1.0e-3 << " " << Erth1[NEW][Nr / 2][Nth / 2][k] << " " << Erth2[NEW][Nr / 2][Nth / 2][k] << " " << Erph[NEW][Nr / 2][Nth / 2][k] 
         //             << " " << Ethph[NEW][Nr / 2][Nth / 2][k] << " " << Ethr[NEW][Nr / 2][Nth / 2][k] << " " << Ethr_tilde[NEW][Nr / 2][Nth / 2][k] << std::endl;          
         // }
 
-        output_E(Er, Eth, Eph, Hr, Hth, Hph, n, n0);
+        // output_E(Er, Eth, Eph, Hr, Hth, Hph, n, n0);
 
-        ofs_obs << n * dt << " " << Eph[NEW][int(60.0e3 / dr)][int(source_th/ Rdth)][int(source_ph / Rdph)]
-                            << " " << Eph[NEW][int(source_r / dr)][int( 70.0e3 / Rdth)][int(source_ph / Rdph)]
-                            << " " << Eph[NEW][int(source_r / dr)][int(source_th / Rdth)][int( 80.0e3 / Rdph)] << std::endl;
+        ofs_obs << n * dt << " " << Eph[NEW][int(40.0e3 / dr)][int(source_th/ Rdth)][int(source_ph / Rdph)]
+                            << " " << Eph[NEW][int(source_r / dr)][int( 40.0e3 / Rdth)][int(source_ph / Rdph)]
+                            << " " << Eph[NEW][int(source_r / dr)][int(source_th / Rdth)][int( 90.0e3 / Rdph)] << std::endl;
     }
 
     // std::ofstream ofs_check("./data/"+ global_dirName + "/check.dat");
@@ -189,6 +214,13 @@ int main(){
     free_memory3d(Hphr, Nr, Nth);
     free_memory4d(Hphr_tilde, 2, Nr, Nth);
     free_memory3d(Hphth, Nr, Nth);
+
+    free_memory4d(Jr, 2, Nr, Nth + 1);
+    free_memory4d(Jth, 2, Nr + 1, Nth);
+    free_memory4d(Jph, 2, Nr + 1, Nth + 1);
+
+    // free_memory3d(S, Nr+1, Nth+1);
+    // free_memory3d(B, Nr+1, Nth+1);
 
     delete [] CERTH1_00;
     delete [] CERTH1_01;
