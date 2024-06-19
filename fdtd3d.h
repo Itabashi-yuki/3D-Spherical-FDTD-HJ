@@ -16,9 +16,11 @@ constexpr double R0 { 6370.0e3 }; /* Radius of the Earth */
 // constexpr double Rr { 50.0e3 };
 // constexpr double Rth { 100.0e3 };
 // constexpr double Rph { 150.0e3 };
-constexpr double Rr { 100.0e3 };
-constexpr double Rth { 50.0e3 };
-constexpr double Rph { 50.0e3 };
+
+
+constexpr double Rr { 70.0e3 };
+constexpr double Rth { 80.0e3 };
+constexpr double Rph { 90.0e3 };
 constexpr double dr { 0.5e3 };
 constexpr double Rdth { 0.5e3 };
 constexpr double Rdph { 0.5e3 };
@@ -48,8 +50,11 @@ constexpr double sigma_J { 12 * dt };
 constexpr double t0 { 5.0 * sigma_J };
 constexpr double source_r { Rr / 2.0 };
 constexpr double source_th { Rth / 2.0 };
-// constexpr double source_ph { Rph / 2.0  + 10.0e3 };
 constexpr double source_ph { Rph / 2.0 };
+// constexpr double source_ph { Rph / 2.0  + 10.0e3 };
+// constexpr double source_r { 25.0e3 };
+// constexpr double source_th { 35.0e3 };
+// constexpr double source_ph { 45.0e3 };
 
 /*観測パラメタ*/
 constexpr double obs_r { source_r };

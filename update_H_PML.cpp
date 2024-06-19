@@ -1,6 +1,8 @@
 #include "fdtd3d.h"
 #include <iostream>
 #include <cmath>
+#include <fstream>
+#include <string>
 
 void update_Hr_PML(double ***Hr, double ***Hrth1, double ***Hrth2, double ***Hrph,
                      double ****Eth, double ****Eph, double *CHRTH1_00, double *CHRTH1_01,
@@ -88,9 +90,12 @@ void update_Hth_PML(double ****Hth, double ***Hthr, double ***Hthph, double ****
     for(int i = 0; i < Nr; i++){
         for(int j = 1; j <= Nth - 1; j++){
             for(int k = 0; k < PML_L; k++){
-                Hthph[i][j][k] = CHTHPH_00[k] * Hthph[i][j][k] - CHTHPH_01[k] / MU0 / r(i+0.5) / std::sin(theta(j)) / dph * (Er[i][j][k+1] - Er[i][j][k]);
-                Hthr_tilde[NEW][i][j][k] = CHTHR_TILDE_00[i] * Hthr_tilde[OLD][i][j][k] + CHTHR_TILDE_01[i] / MU0 / dr * (Eph_tilde[NEW][i+1][j][k] - Eph_tilde[NEW][i][j][k]);
-                Hthr[i][j][k] = CHTHR_10[i] * Hthr[i][j][k] + CHTHR_11[i] / dt * (Hthr_tilde[NEW][i][j][k] - Hthr_tilde[OLD][i][j][k]);
+                Hthph[i][j][k] = CHTHPH_00[k] * Hthph[i][j][k] 
+                                - CHTHPH_01[k] / MU0 / r(i+0.5) / std::sin(theta(j)) / dph * (Er[i][j][k+1] - Er[i][j][k]);
+                Hthr_tilde[NEW][i][j][k] = CHTHR_TILDE_00[i] * Hthr_tilde[OLD][i][j][k] 
+                                        + CHTHR_TILDE_01[i] / MU0 / dr * (Eph_tilde[NEW][i+1][j][k] - Eph_tilde[NEW][i][j][k]);
+                Hthr[i][j][k] = CHTHR_10[i] * Hthr[i][j][k] 
+                                + CHTHR_11[i] / dt * (Hthr_tilde[NEW][i][j][k] - Hthr_tilde[OLD][i][j][k]);
                 Hth[NEW][i][j][k] = Hthr[i][j][k] + Hthph[i][j][k];
                 // check[NEW][i][j][k] += 1.0;
             }
@@ -211,6 +216,17 @@ void update_Hph_PML(double ****Hph, double ***Hphr, double ***Hphth, double ****
         }
     }
 
+                // if(n >= 39 && n <= 42){
+                //     std::ofstream ofs_PML("./data/" + global_dirName + "/PML_" + std::to_string(n) +".dat",std::ios::app);
+                //     for(int i = 84; i < Nr; i++){
+                //         for(int k = PML_L + 1; k <= Nph - PML_L - 1; k++){
+                //             ofs_PML << i * dr * 1.0e-3 << " " << k * R0 * dph * 1.0e-3 << " " << Hphth[i][Nth/2][k] << " " << Hphr_tilde[NEW][i][Nth/2][k] 
+                //             << " " << Hphr[i][Nth/2][k] << " " << Hph[NEW][i][Nth/2][k] << " " << Eth_tilde[NEW][i+1][Nth/2][k] << " " << Eth_tilde[NEW][i][Nth/2][k] << std::endl;
+                //         }
+                //         ofs_PML << std::endl;
+                //     }
+                // }
+
     for(int i = PML_L; i < Nr - PML_L; i++){
         for(int j = 0; j < PML_L; j++){
             for(int k = PML_L + 1; k <= Nph - PML_L - 1; k++){
@@ -258,7 +274,7 @@ void update_Hth_tilde(double ***Hth_tilde, double ****Hth, double *CHTH_TILDE, d
         }
     }
 
-    for(int i = 0; i < PML_L; i++){
+    for(int i = 0; i < PML_L + 1; i++){
         for(int j = 1; j <= Nth - 1; j++){
             for(int k = PML_L; k < Nph - PML_L; k++){
                 Hth_tilde[i][j][k] = Hth_tilde[i][j][k] + r(i + 0.5) * ( Hth[NEW][i][j][k] - Hth[OLD][i][j][k] ) + CHTH_TILDE[i] * ( Hth[NEW][i][j][k] + Hth[OLD][i][j][k] );
@@ -267,7 +283,7 @@ void update_Hth_tilde(double ***Hth_tilde, double ****Hth, double *CHTH_TILDE, d
         }
     }
 
-    for(int i = Nr - PML_L; i < Nr; i++){
+    for(int i = Nr - PML_L - 1; i < Nr; i++){
         for(int j = 1; j <= Nth - 1; j++){
             for(int k = PML_L; k < Nph - PML_L; k++){
                 Hth_tilde[i][j][k] = Hth_tilde[i][j][k] + r(i + 0.5) * ( Hth[NEW][i][j][k] - Hth[OLD][i][j][k] ) + CHTH_TILDE[i] * ( Hth[NEW][i][j][k] + Hth[OLD][i][j][k] );
@@ -276,7 +292,7 @@ void update_Hth_tilde(double ***Hth_tilde, double ****Hth, double *CHTH_TILDE, d
         }
     }
 
-    for(int i = PML_L; i < Nr - PML_L; i++){
+    for(int i = PML_L + 1; i < Nr - PML_L - 1; i++){
         for(int j = 1; j <= PML_L; j++){
             for(int k = PML_L; k < Nph - PML_L; k++){
                 Hth_tilde[i][j][k] = Hth_tilde[i][j][k] + r(i + 0.5) * ( Hth[NEW][i][j][k] - Hth[OLD][i][j][k] ) + CHTH_TILDE[i] * ( Hth[NEW][i][j][k] + Hth[OLD][i][j][k] );
@@ -285,7 +301,7 @@ void update_Hth_tilde(double ***Hth_tilde, double ****Hth, double *CHTH_TILDE, d
         }
     }
 
-    for(int i = PML_L; i < Nr - PML_L; i++){
+    for(int i = PML_L + 1; i < Nr - PML_L - 1; i++){
         for(int j = Nth - PML_L; j <= Nth - 1; j++){
             for(int k = PML_L; k < Nph - PML_L; k++){
                 Hth_tilde[i][j][k] = Hth_tilde[i][j][k] + r(i + 0.5) * ( Hth[NEW][i][j][k] - Hth[OLD][i][j][k] ) + CHTH_TILDE[i] * ( Hth[NEW][i][j][k] + Hth[OLD][i][j][k] );
@@ -317,7 +333,7 @@ void update_Hph_tilde(double ***Hph_tilde, double ****Hph, double *CHPH_TILDE, d
         }
     }
 
-    for(int i = 0; i < PML_L; i++){
+    for(int i = 0; i < PML_L + 1; i++){
         for(int j = 0; j < Nth; j++){
             for(int k = PML_L + 1; k <= Nph - PML_L - 1; k++){
                 Hph_tilde[i][j][k] = Hph_tilde[i][j][k] + r(i+0.5) * ( Hph[NEW][i][j][k] - Hph[OLD][i][j][k] ) + CHPH_TILDE[i] * ( Hph[NEW][i][j][k] + Hph[OLD][i][j][k] );
@@ -326,7 +342,7 @@ void update_Hph_tilde(double ***Hph_tilde, double ****Hph, double *CHPH_TILDE, d
         }
     }
 
-    for(int i = Nr - PML_L; i < Nr; i++){
+    for(int i = Nr - PML_L - 1; i < Nr; i++){
         for(int j = 0; j < Nth; j++){
             for(int k = PML_L + 1; k <= Nph - PML_L - 1; k++){
                 Hph_tilde[i][j][k] = Hph_tilde[i][j][k] + r(i+0.5) * ( Hph[NEW][i][j][k] - Hph[OLD][i][j][k] ) + CHPH_TILDE[i] * ( Hph[NEW][i][j][k] + Hph[OLD][i][j][k] );
@@ -335,7 +351,7 @@ void update_Hph_tilde(double ***Hph_tilde, double ****Hph, double *CHPH_TILDE, d
         }
     }
 
-    for(int i = PML_L; i < Nr - PML_L; i++){
+    for(int i = PML_L + 1; i < Nr - PML_L - 1; i++){
         for(int j = 0; j < PML_L; j++){
             for(int k = PML_L + 1; k <= Nph - PML_L - 1; k++){
                 Hph_tilde[i][j][k] = Hph_tilde[i][j][k] + r(i+0.5) * ( Hph[NEW][i][j][k] - Hph[OLD][i][j][k] ) + CHPH_TILDE[i] * ( Hph[NEW][i][j][k] + Hph[OLD][i][j][k] );
@@ -344,7 +360,7 @@ void update_Hph_tilde(double ***Hph_tilde, double ****Hph, double *CHPH_TILDE, d
         }
     }
 
-    for(int i = PML_L; i < Nr - PML_L; i++){
+    for(int i = PML_L + 1; i < Nr - PML_L - 1; i++){
         for(int j = Nth - PML_L; j < Nth; j++){
             for(int k = PML_L + 1; k <= Nph - PML_L - 1; k++){
                 Hph_tilde[i][j][k] = Hph_tilde[i][j][k] + r(i+0.5) * ( Hph[NEW][i][j][k] - Hph[OLD][i][j][k] ) + CHPH_TILDE[i] * ( Hph[NEW][i][j][k] + Hph[OLD][i][j][k] );

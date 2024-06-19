@@ -4,26 +4,26 @@
 
 double PML_sigma_r(double i){
     double sigma_max = - (PML_M + 1.0) * C0 / 2.0 / PML_L / dr * std::log(PML_R);
-    sigma_max = 0.0;
+    //sigma_max = 0.0;
     return sigma_max * std::pow((PML_L - i) * dr / PML_L / dr, PML_M);
 }
 
 double PML_sigma_th(double j){
     double sigma_max = - (PML_M + 1.0) * C0 / 2.0 / PML_L / (R0 * dth) * std::log(PML_R);
-    sigma_max = 0.0;
+    //sigma_max = 0.0;
     return sigma_max * std::pow((PML_L - j) / PML_L, PML_M);
 }
 
 double PML_sigma_ph(double k){
     double sigma_max = - (PML_M + 1.0) * C0 / 2.0 / PML_L / (R0 * dph) * std::log(PML_R);
-    sigma_max = 0.0;
+    //sigma_max = 0.0;
     return sigma_max * std::pow((PML_L - k) / PML_L, PML_M);
 }
 
 
 double PML_sigma_r_tilde(double i){
     double sigma_max = - (PML_M + 1.0) * C0 / 2.0 / PML_L / dr * std::log(PML_R);
-    sigma_max = 0.0;
+    //sigma_max = 0.0;
 
     // int N = 10000;
     // double Rmax = PML_L * dr;
@@ -254,14 +254,14 @@ void initialize_PML(double *CERTH1_00, double *CERTH1_01, double *CERPH_00, doub
         CHPH_TILDE[i] = sigma_r_tilde_H[i] * dt / 2.0;
     }
 
-    std::ofstream ofs_C_i("./data/" + global_dirName + "/C_i.dat");
-    ofs_C_i << "#CETHR_10, CETHR_11, CETHR_TILDE_00, CETHR_TILDE_01, CEPHR_10, CEPHR_11, CEPHR_TILDE_00, CEPHR_TILDE_01, CETH_TILDE_00, CEPH_TILDE_00, CHTHR_10, CHTHR_11, CHTHR_TILDE_00, CHTHR_TILDE_01, CHPHR_10, CHPHR_11, CHPHR_TILDE_00, CHPHR_TILDE_01, CHTH_TILDE, CHPH_TILDE" << std::endl;
-    for(int i = 0; i < Nr; i++){
-        ofs_C_i << i << " " << CETHR_10[i] << " " << CETHR_11[i] << " " << CETHR_TILDE_00[i] << " " << CETHR_TILDE_01[i] << " " << CEPHR_10[i] << " " << CEPHR_11[i] 
-                << " " << CEPHR_TILDE_00[i] << " " << CEPHR_TILDE_01[i] << " " << CETH_TILDE_00[i] << " " << CEPH_TILDE_00[i] <<  CHTHR_10[i] << " " << CHTHR_11[i] 
-                << " " << CHTHR_TILDE_00[i] << " " << CHTHR_TILDE_01[i] << " " << CHPHR_10[i] << " " << CHPHR_11[i] << " " << CHPHR_TILDE_00[i] << " " << CHPHR_TILDE_01[i] 
-                << " " << CHTH_TILDE[i] << " " << CHPH_TILDE[i] << std::endl;
-    }
+    // std::ofstream ofs_C_i("./data/" + global_dirName + "/C_i.dat");
+    // ofs_C_i << "#CETHR_10, CETHR_11, CETHR_TILDE_00, CETHR_TILDE_01, CEPHR_10, CEPHR_11, CEPHR_TILDE_00, CEPHR_TILDE_01, CETH_TILDE_00, CEPH_TILDE_00, CHTHR_10, CHTHR_11, CHTHR_TILDE_00, CHTHR_TILDE_01, CHPHR_10, CHPHR_11, CHPHR_TILDE_00, CHPHR_TILDE_01, CHTH_TILDE, CHPH_TILDE" << std::endl;
+    // for(int i = 0; i < Nr; i++){
+    //     ofs_C_i << i << " " << CETHR_10[i] << " " << CETHR_11[i] << " " << CETHR_TILDE_00[i] << " " << CETHR_TILDE_01[i] << " " << CEPHR_10[i] << " " << CEPHR_11[i] 
+    //             << " " << CEPHR_TILDE_00[i] << " " << CEPHR_TILDE_01[i] << " " << CETH_TILDE_00[i] << " " << CEPH_TILDE_00[i] <<  CHTHR_10[i] << " " << CHTHR_11[i] 
+    //             << " " << CHTHR_TILDE_00[i] << " " << CHTHR_TILDE_01[i] << " " << CHPHR_10[i] << " " << CHPHR_11[i] << " " << CHPHR_TILDE_00[i] << " " << CHPHR_TILDE_01[i] 
+    //             << " " << CHTH_TILDE[i] << " " << CHPH_TILDE[i] << std::endl;
+    // }
 
     // std::ofstream ofs_C_j("./data/" + global_dirName + "/C_j.dat");
     // ofs_C_j << "#CERTH1_00, CERTH1_01, CEPHTH_00, CEPHTH_01, CHRTH1_00, CHRTH1_01, CHPHTH_00, CHPHTH_01" << std::endl;

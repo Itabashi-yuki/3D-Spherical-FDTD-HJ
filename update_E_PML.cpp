@@ -1,5 +1,7 @@
 #include "fdtd3d.h"
 #include <iostream>
+#include <fstream>
+#include <string>
 
 void update_Er_PML(double ****Erth1, double ****Erth2, double ****Erph, double ***Er, double ***Hr, double ****Hth, double ****Hph,
                      double *CERTH1_00, double *CERTH1_01, double *CERPH_00, double *CERPH_01, double ****check, int n){
@@ -42,6 +44,8 @@ void update_Er_PML(double ****Erth1, double ****Erth2, double ****Erph, double *
                 Erth2[NEW][i][j][k] = Erth2[OLD][i][j][k] + dt * cot(theta(j)) / 2.0 / r(i + 0.5) / EPS0 * ( Hph[OLD][i][j][k] + Hph[OLD][i][j-1][k] );
                 Erph[NEW][i][j][k] = CERPH_00[k] * Erph[OLD][i][j][k] - CERPH_01[k] / r(i + 0.5) / std::sin(theta(j)) / dph / EPS0 * ( Hth[OLD][i][j][k] - Hth[OLD][i][j][k-1] );
                 Er[i][j][k] = Erth1[NEW][i][j][k] + Erth2[NEW][i][j][k] + Erph[NEW][i][j][k];
+                
+
                 // check[NEW][i][j][k] += 1.0;         
             }
         }
@@ -50,14 +54,28 @@ void update_Er_PML(double ****Erth1, double ****Erth2, double ****Erph, double *
     for(int i = Nr - PML_L; i < Nr; i++){
         for(int j = 1; j <= Nth - 1; j++){
             for(int k = PML_L + 1; k <= Nph - PML_L - 1; k++){
-                Erth1[NEW][i][j][k] = CERTH1_00[j] * Erth1[OLD][i][j][k] + CERTH1_01[j] / r(i + 0.5) / dth / EPS0 * ( Hph[OLD][i][j][k] - Hph[OLD][i][j-1][k] );
-                Erth2[NEW][i][j][k] = Erth2[OLD][i][j][k] + dt * cot(theta(j)) / 2.0 / r(i + 0.5) / EPS0 * ( Hph[OLD][i][j][k] + Hph[OLD][i][j-1][k] );
-                Erph[NEW][i][j][k] = CERPH_00[k] * Erph[OLD][i][j][k] - CERPH_01[k] / r(i + 0.5) / std::sin(theta(j)) / dph / EPS0 * ( Hth[OLD][i][j][k] - Hth[OLD][i][j][k-1] );
+                Erth1[NEW][i][j][k] = CERTH1_00[j] * Erth1[OLD][i][j][k] 
+                                    + CERTH1_01[j] / r(i + 0.5) / dth / EPS0 * ( Hph[OLD][i][j][k] - Hph[OLD][i][j-1][k] );
+                Erth2[NEW][i][j][k] = Erth2[OLD][i][j][k] 
+                                    + dt * cot(theta(j)) / 2.0 / r(i + 0.5) / EPS0 * ( Hph[OLD][i][j][k] + Hph[OLD][i][j-1][k] );
+                Erph[NEW][i][j][k] = CERPH_00[k] * Erph[OLD][i][j][k] 
+                                    - CERPH_01[k] / r(i + 0.5) / std::sin(theta(j)) / dph / EPS0 * ( Hth[OLD][i][j][k] - Hth[OLD][i][j][k-1] );
                 Er[i][j][k] = Erth1[NEW][i][j][k] + Erth2[NEW][i][j][k] + Erph[NEW][i][j][k];
+
                 // check[NEW][i][j][k] += 1.0;
             }
         }
     }
+                // if(n >= 39 && n <= 42){
+                //     std::ofstream ofs_PML("./data/" + global_dirName + "/PML_" + std::to_string(n) +".dat",std::ios::app);
+                //     for(int i = 84; i < Nr; i++){
+                //         for(int k = PML_L + 1; k <= Nph - PML_L - 1; k++){
+                //             ofs_PML << i * dr * 1.0e-3 << " " << k * R0 * dph * 1.0e-3 << " " << Erth1[NEW][i][Nth/2][k] << " " << Erth2[NEW][i][Nth/2][k] 
+                //                     << " " << Erph[NEW][i][Nth/2][k] << " " << Er[i][Nth/2][k] << " " << Hph[OLD][i][Nth/2][k] << " " << Hph[OLD][i][Nth/2 - 1][k] << std::endl;
+                //         }
+                //         ofs_PML << std::endl;
+                //     }
+                // }
 
     for(int i = PML_L; i < Nr - PML_L; i++){
         for(int j = 1; j <= PML_L; j++){
@@ -162,6 +180,16 @@ void update_Eth_PML(double ****Ethph, double ****Ethr, double ****Ethr_tilde, do
             }
         }
     }
+
+                //     if(n >= 39 && n <= 42){
+                //     std::ofstream ofs_PML("./data/" + global_dirName + "/PML_" + std::to_string(n) +".dat",std::ios::app);
+                //     for(int i = 0; i < Nr; i++){
+                //         for(int k = PML_L + 1; k <= Nph - PML_L - 1; k++){
+                //             ofs_PML << i * dr * 1.0e-3 << " " << k * R0 * dph * 1.0e-3 << " " <<  Ethr_tilde[NEW][i][Nth/2][k] << std::endl;
+                //         }
+                //         ofs_PML << std::endl;
+                //     }
+                // }
 }
 
 void update_Eph_PML(double ****Ephr, double ****Ephr_tilde, double ****Ephth, double ****Eph, double ***Hr, double ***Hth_tilde,
@@ -266,7 +294,7 @@ void update_Eth_tilde(double ****Eth_tilde, double ****Eth, double *CETH_TILDE_0
         }
     }
 
-    for(int i = 1; i <= PML_L; i++){
+    for(int i = 1; i <= PML_L + 1; i++){
         for(int j = 0; j < Nth; j++){
             for(int k = PML_L + 1; k <= Nph - PML_L - 1; k++){
                 Eth_tilde[NEW][i][j][k] = Eth_tilde[OLD][i][j][k] + r(i) * (Eth[NEW][i][j][k] - Eth[OLD][i][j][k]) 
@@ -276,7 +304,7 @@ void update_Eth_tilde(double ****Eth_tilde, double ****Eth, double *CETH_TILDE_0
         }
     }
 
-    for(int i = Nr - PML_L; i <= Nr - 1; i++){
+    for(int i = Nr - PML_L - 1; i <= Nr - 1; i++){
         for(int j = 0; j < Nth; j++){
             for(int k = PML_L + 1; k <= Nph - PML_L - 1; k++){
                 Eth_tilde[NEW][i][j][k] = Eth_tilde[OLD][i][j][k] + r(i) * (Eth[NEW][i][j][k] - Eth[OLD][i][j][k]) 
@@ -286,7 +314,8 @@ void update_Eth_tilde(double ****Eth_tilde, double ****Eth, double *CETH_TILDE_0
         }
     }
 
-    for(int i = PML_L + 1; i <= Nr - PML_L - 1; i++){
+
+    for(int i = PML_L + 2; i <= Nr - PML_L - 2; i++){
         for(int j = 0; j < PML_L; j++){
             for(int k = PML_L + 1; k <= Nph - PML_L - 1; k++){
                 Eth_tilde[NEW][i][j][k] = Eth_tilde[OLD][i][j][k] + r(i) * (Eth[NEW][i][j][k] - Eth[OLD][i][j][k]) 
@@ -296,7 +325,7 @@ void update_Eth_tilde(double ****Eth_tilde, double ****Eth, double *CETH_TILDE_0
         }
     }
 
-    for(int i = PML_L + 1; i <= Nr - PML_L - 1; i++){
+    for(int i = PML_L + 2; i <= Nr - PML_L - 2; i++){
         for(int j = Nth - PML_L; j < Nth; j++){
             for(int k = PML_L + 1; k <= Nph - PML_L - 1; k++){
                 Eth_tilde[NEW][i][j][k] = Eth_tilde[OLD][i][j][k] + r(i) * (Eth[NEW][i][j][k] - Eth[OLD][i][j][k]) 
@@ -331,7 +360,7 @@ void update_Eph_tilde(double ****Eph_tilde, double ****Eph, double *CEPH_TILDE_0
         }
     }
 
-    for(int i = 1; i <= PML_L; i++){
+    for(int i = 1; i <= PML_L + 1; i++){
         for(int j = 1; j <= Nth - 1; j++){
             for(int k = PML_L; k < Nph - PML_L; k++){
                 Eph_tilde[NEW][i][j][k] = Eph_tilde[OLD][i][j][k] + r(i) * (Eph[NEW][i][j][k] - Eph[OLD][i][j][k]) 
@@ -341,7 +370,7 @@ void update_Eph_tilde(double ****Eph_tilde, double ****Eph, double *CEPH_TILDE_0
         }
     }
 
-    for(int i = Nr - PML_L; i <= Nr - 1; i++){
+    for(int i = Nr - PML_L - 1; i <= Nr - 1; i++){
         for(int j = 1; j <= Nth - 1; j++){
             for(int k = PML_L; k < Nph - PML_L; k++){
                 Eph_tilde[NEW][i][j][k] = Eph_tilde[OLD][i][j][k] + r(i) * (Eph[NEW][i][j][k] - Eph[OLD][i][j][k]) 
@@ -351,7 +380,7 @@ void update_Eph_tilde(double ****Eph_tilde, double ****Eph, double *CEPH_TILDE_0
         }
     }
 
-    for(int i = PML_L + 1; i <= Nr - PML_L - 1; i++){
+    for(int i = PML_L + 2; i <= Nr - PML_L - 2; i++){
         for(int j = 1; j <= PML_L; j++){
             for(int k = PML_L; k < Nph - PML_L; k++){
                 Eph_tilde[NEW][i][j][k] = Eph_tilde[OLD][i][j][k] + r(i) * (Eph[NEW][i][j][k] - Eph[OLD][i][j][k]) 
@@ -361,8 +390,8 @@ void update_Eph_tilde(double ****Eph_tilde, double ****Eph, double *CEPH_TILDE_0
         }
     }
 
-    for(int i = PML_L + 1; i <= Nr - PML_L - 1; i++){
-        for(int j = Nth - PML_L + 1; j <= Nth - 1; j++){
+    for(int i = PML_L + 2; i <= Nr - PML_L - 2; i++){
+        for(int j = Nth - PML_L; j <= Nth - 1; j++){
             for(int k = PML_L; k < Nph - PML_L; k++){
                 Eph_tilde[NEW][i][j][k] = Eph_tilde[OLD][i][j][k] + r(i) * (Eph[NEW][i][j][k] - Eph[OLD][i][j][k]) 
                                         + CEPH_TILDE_00[i] * (Eph[NEW][i][j][k] + Eph[OLD][i][j][k]);

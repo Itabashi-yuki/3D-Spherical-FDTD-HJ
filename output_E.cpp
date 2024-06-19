@@ -45,7 +45,7 @@ void output_E(double ***Er, double ****Eth, double ****Eph, double ***Hr, double
         }
         ofs_E_thph.close();
 
-        for(int i = 0; i < Nr; i+=2){
+        for(int i = 0; i < Nr; i++){
             for(int j = 0; j < Nth; j++){
                 ofs_E_rth << i * dr * 1.0e-3 << " " << j * R0 * dth * 1.0e-3 << " " << Er[i][j][Nph / 2] << " " << Eth[NEW][i][j][Nph / 2] 
                 << " " << Eph[NEW][i][j][Nph / 2] << " " << Hr[i][j][Nph / 2] << " " << Hth[NEW][i][j][Nph / 2] 

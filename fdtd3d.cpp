@@ -131,9 +131,9 @@ int main(){
 
         output_E(Er, Eth, Eph, Hr, Hth, Hph, n, n0);
 
-        ofs_obs << n * dt << " " << Eth[NEW][int(35.0e3 / dr)][int(source_th/ Rdth)][int(source_ph / Rdph)]
-                            << " " << Eth[NEW][int(source_r / dr)][int( 35.0e3 / Rdth)][int(source_ph / Rdph)]
-                            << " " << Eth[NEW][int(obs_r / dr)][int(obs_th / Rdth)][int( obs_ph / Rdph)] << std::endl;
+        ofs_obs << n * dt << " " << Eph[NEW][int(60.0e3 / dr)][int(source_th/ Rdth)][int(source_ph / Rdph)]
+                            << " " << Eph[NEW][int(source_r / dr)][int( 70.0e3 / Rdth)][int(source_ph / Rdph)]
+                            << " " << Eph[NEW][int(source_r / dr)][int(source_th / Rdth)][int( 80.0e3 / Rdph)] << std::endl;
     }
 
     // std::ofstream ofs_check("./data/"+ global_dirName + "/check.dat");
