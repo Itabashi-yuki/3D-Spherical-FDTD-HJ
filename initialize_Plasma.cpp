@@ -6,11 +6,13 @@
 
 double cal_nu(double exp_nu){
     double nu = std::pow(10, exp_nu);
+    // return 0.0;
     return nu;
 }
 
 double cal_Ne(double exp_Ne){
     double Ne = std::pow(10, exp_Ne);
+    // return 0.0;
     return Ne;
 }
 
@@ -19,8 +21,8 @@ double cal_omg_p(double Ne){
 }
 
 void initialize_Plasma(Eigen::Matrix3d ***S, Eigen::Matrix3d ***B){
-    double exp_nu = 7.0;
-    double exp_Ne = 8.0;
+    // double exp_nu = 7.0;
+    // double exp_Ne = 9.0;
     double nu = cal_nu(exp_nu);
     double Ne = cal_Ne(exp_Ne);
 

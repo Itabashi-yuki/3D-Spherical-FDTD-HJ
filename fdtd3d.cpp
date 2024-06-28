@@ -106,9 +106,9 @@ int main(){
     // }
     // exit(0);
     // int n0 = cal_obs_n0();
-    int n0 = 1;
+    int n0 = 4;
 
-    std::ofstream ofs_obs("./data/" + global_dirName +"/obs.dat",std::ios::app);
+    std::ofstream ofs_obs( PATH + "data/" + global_dirName +"obs.dat",std::ios::app);
     // ofs_obs << "r方向 + 5km, th方向 + 5km, ph方向 + 5km " << std::endl;
     for(int n = 1; n < Nt; n++){
         int NEW = n % 2;
@@ -154,11 +154,11 @@ int main(){
         //             << " " << Ethph[NEW][Nr / 2][Nth / 2][k] << " " << Ethr[NEW][Nr / 2][Nth / 2][k] << " " << Ethr_tilde[NEW][Nr / 2][Nth / 2][k] << std::endl;          
         // }
 
-        // output_E(Er, Eth, Eph, Hr, Hth, Hph, n, n0);
+        output_E(Er, Eth, Eph, Hr, Hth, Hph, n, n0);
 
-        ofs_obs << n * dt << " " << Eph[NEW][int(40.0e3 / dr)][int(source_th/ Rdth)][int(source_ph / Rdph)]
-                            << " " << Eph[NEW][int(source_r / dr)][int( 40.0e3 / Rdth)][int(source_ph / Rdph)]
-                            << " " << Eph[NEW][int(source_r / dr)][int(source_th / Rdth)][int( 90.0e3 / Rdph)] << std::endl;
+        ofs_obs << n * dt << " " << Er[int(40.0e3 / dr)][int(source_th/ Rdth)][int(source_ph / Rdph)]
+                            << " " << Er[int(source_r / dr)][int( 40.0e3 / Rdth)][int(source_ph / Rdph)]
+                            << " " << Er[int(source_r / dr)][int(source_th / Rdth)][int( 90.0e3 / Rdph)] << std::endl;
     }
 
     // std::ofstream ofs_check("./data/"+ global_dirName + "/check.dat");

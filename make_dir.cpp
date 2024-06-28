@@ -17,14 +17,14 @@ void make_dir(){
     // フォーマットを指定して時刻を文字列に変換
     std::tm bt = *std::localtime(&time_t_now);
     std::ostringstream oss;
-    oss << std::put_time(&bt, "%Y%m%d_%H%M");
+    oss << std::put_time(&bt, "%Y%m%d_%H%M/");
 
     // ディレクトリ名として使用
     std::string dirName;
     dirName = oss.str();
 
     // ディレクトリ作成
-    std::filesystem::create_directory("./data/" + dirName);
+    std::filesystem::create_directory( PATH + "data/" + dirName);
 
     global_dirName = dirName;
 

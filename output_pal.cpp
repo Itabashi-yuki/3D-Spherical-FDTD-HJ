@@ -4,9 +4,9 @@
 #include <string>
 
 void output_pal(){
-    std::ofstream ofs_pal("./data/" + global_dirName + "/pal.dat",std::ios::app);
+    std::ofstream ofs_pal( PATH + "data/" + global_dirName + "pal.dat",std::ios::app);
 
-    ofs_pal << "真空中　PMLあり" << std::endl;
+    ofs_pal << "プラズマ領域あり　PMLは真空中" << std::endl;
     ofs_pal << std::endl;
 
     ofs_pal << "Rr = " << Rr << std::endl;
@@ -19,6 +19,7 @@ void output_pal(){
     ofs_pal << "dph = " << dph << std::endl;
     ofs_pal << "thR = " << thR << std::endl;
 
+    ofs_pal << "xi = " << xi << std::endl;
     ofs_pal << "dt = " << dt << std::endl;
     ofs_pal << "Tmax = " << Tmax << std::endl;
 
@@ -27,11 +28,24 @@ void output_pal(){
     ofs_pal << "source_th = " << int((source_th) / Rdth) << std::endl;
     ofs_pal << "source_ph = " << int((source_ph) / Rdph) << std::endl;
 
+    ofs_pal << "-------PMLパラメタ-------" << std::endl;
     ofs_pal << "PML_L = " << PML_L << std::endl;
     ofs_pal << "PML_R = " << PML_R << std::endl;
     ofs_pal << "PML_M = " << PML_M << std::endl;
 
+    ofs_pal << "-------プラズマパラメタ-------" << std::endl;
+    ofs_pal << "Rr_iono_lower = " << Rr_iono_lower << std::endl;
+    ofs_pal << "Rr_iono_upper = " << Rr_iono_upper << std::endl;
+    ofs_pal << "Rth_iono_lower = " << Rth_iono_lower << std::endl;
+    ofs_pal << "Rth_iono_upper = " << Rth_iono_upper << std::endl;
+    ofs_pal << "Rph_iono_lower = " << Rph_iono_lower << std::endl;
+    ofs_pal << "Rph_iono_upper = " << Rph_iono_upper << std::endl;
     ofs_pal << "B0 = " << B0 << std::endl;
+    ofs_pal << "Ne = " << cal_Ne(exp_Ne) << std::endl;
+    ofs_pal << "nu = " << cal_nu(exp_nu) << std::endl;
+    ofs_pal << "THETA = " << THETA << std::endl; 
+    ofs_pal << "PHI = " << PHI << std::endl; 
+
 
 
     ofs_pal.close();

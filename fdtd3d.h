@@ -3,6 +3,7 @@
 #include <eigen3/Eigen/Dense>
 
 extern std::string global_dirName;
+const std::string PATH { "/home/itabashi/OneDrive/Lab/3D_Spherical_FDTD_HJ/" };
 
 constexpr double C0 { 3.0e8 };
 constexpr double MU0 { 4.0 * M_PI * 1.0e-7 };
@@ -33,9 +34,17 @@ constexpr int Nr { int(Rr / dr) };
 constexpr int Nth { int(Rth / Rdth) };
 constexpr int Nph { int(Rph / Rdph) };
 
-constexpr double dt { 0.9 / C0 / sqrt( 1.0 / dr / dr + 1.0 / (R0 * dth) / (R0 * dth) 
+/*xiの導入が必要*/
+constexpr double Tmax { 0.001 };
+// constexpr double Tmax { 0.1 };
+constexpr double Ne_max { 1.0e9 };
+constexpr double Omega { std::sqrt( CHARGE_e * CHARGE_e * Ne_max / MASS_e / EPS0 ) };
+constexpr double xi { 1.0 / std::sqrt( 1.0 + Omega * Omega / 4.0 / C0 / C0 / ( 1.0 / dr / dr + 1.0 / ( R0 * dth ) / ( R0 * dth ) 
+                    + 1.0 / ( R0 * std::sin(M_PI / 2.0 - thR / 2.0) * dph ) / ( R0 * std::sin(M_PI / 2.0 - thR / 2.0) * dph ) ) ) };
+// constexpr double dt { 0.9 / C0 / sqrt( 1.0 / dr / dr + 1.0 / (R0 * dth) / (R0 * dth) 
+//                         + 1.0 / (R0 * std::sin(M_PI / 2.0 - thR / 2.0) * dph) / (R0 * std::sin(M_PI / 2.0 - thR / 2.0) * dph)  ) };
+constexpr double dt { xi * 0.9999 / C0 / sqrt( 1.0 / dr / dr + 1.0 / (R0 * dth) / (R0 * dth) 
                         + 1.0 / (R0 * std::sin(M_PI / 2.0 - thR / 2.0) * dph) / (R0 * std::sin(M_PI / 2.0 - thR / 2.0) * dph)  ) };
-constexpr double Tmax { 0.0005 };
 constexpr int Nt { int(Tmax / dt) };
 
 /* PMLパラメタ */
@@ -46,7 +55,9 @@ constexpr double PML_R { 1.0e-6 };
 
 /* 電流源パラメタ */
 constexpr double f0 { 40.0e3 };
-constexpr double sigma_J { 12 * dt };
+// constexpr double sigma_J { 12 * dt };
+constexpr double current_dt { 7.29756e-07 };
+constexpr double sigma_J { 12 * current_dt };
 constexpr double t0 { 5.0 * sigma_J };
 constexpr double source_r { Rr / 2.0 };
 constexpr double source_th { Rth / 2.0 };
@@ -69,6 +80,9 @@ constexpr int Nth_iono_lower { int(Rth_iono_lower / Rdth)};
 constexpr int Nth_iono_upper { int(Rth_iono_upper / Rdth)};
 constexpr int Nph_iono_lower { int(Rph_iono_lower / Rdph)};
 constexpr int Nph_iono_upper { int(Rph_iono_upper / Rdph)};
+
+constexpr double exp_Ne { 0.0 };
+constexpr double exp_nu { 7.0 };
 
 constexpr double THETA { M_PI / 2.0 };
 constexpr double PHI { 0.0 };
@@ -148,7 +162,8 @@ inline double r(double i){
     return R0 + i * dr;
 }
 inline double theta(double j){
-    return M_PI / 2.0 - j * dth;
+    // return M_PI / 2.0 - j * dth;
+    return M_PI / 2.0 - thR / 2.0 + j * dth;
 }
 
 inline double cot(double theta){
