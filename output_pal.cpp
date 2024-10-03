@@ -28,6 +28,10 @@ void output_pal(){
     ofs_pal << "source_th = " << int((source_th) / Rdth) << std::endl;
     ofs_pal << "source_ph = " << int((source_ph) / Rdph) << std::endl;
 
+    ofs_pal << "obs_r = " << obs_r << std::endl;
+    ofs_pal << "obs_th = " << obs_th << std::endl;
+    ofs_pal << "obs_ph = " << obs_ph << std::endl;
+
     ofs_pal << "-------PMLパラメタ-------" << std::endl;
     ofs_pal << "PML_L = " << PML_L << std::endl;
     ofs_pal << "PML_R = " << PML_R << std::endl;

@@ -55,9 +55,9 @@ double PML_C11(double r, double sigma){
     return 1.0 / ( r / dt + sigma / 2.0 );
 }
 
-void initialize_PML(double *CERTH1_00, double *CERTH1_01, double *CERPH_00, double *CERPH_01, double *CETHPH_00, double *CETHPH_01, double *CETHR_10, double *CETHR_11,
-                     double *CETHR_TILDE_00, double *CETHR_TILDE_01, double *CEPHR_10, double *CEPHR_11, double *CEPHR_TILDE_00, double *CEPHR_TILDE_01, double *CEPHTH_00,
-                     double *CEPHTH_01, double *CETH_TILDE_00, double *CETH_TILDE_01,
+void initialize_PML(double *CDRTH1_00, double *CDRTH1_01, double *CDRPH_00, double *CDRPH_01, double *CDTHPH_00, double *CDTHPH_01, double *CDTHR_10, double *CDTHR_11,
+                     double *CDTHR_TILDE_00, double *CDTHR_TILDE_01, double *CDPHR_10, double *CDPHR_11, double *CDPHR_TILDE_00, double *CDPHR_TILDE_01, double *CDPHTH_00,
+                     double *CDPHTH_01, double *CETH_TILDE_00, double *CETH_TILDE_01,
                      double *CEPH_TILDE_00, double *CEPH_TILDE_01, double *CHRTH1_00, double *CHRTH1_01, double *CHRPH_00, double *CHRPH_01, double *CHTHPH_00,
                      double *CHTHPH_01, double *CHTHR_TILDE_00, double *CHTHR_TILDE_01, double *CHTHR_10, double *CHTHR_11,
                      double *CHPHTH_00, double *CHPHTH_01, double *CHPHR_TILDE_00, double *CHPHR_TILDE_01, double *CHPHR_10, double *CHPHR_11, double *CHTH_TILDE, double *CHPH_TILDE){
@@ -162,43 +162,43 @@ void initialize_PML(double *CERTH1_00, double *CERTH1_01, double *CERPH_00, doub
     // ofs_sigma_k.close();
     // exit(0);
     for(int j = 1; j <= Nth - 1; j++){
-        CERTH1_00[j] = PML_C00(sigma_th_E[j]);
-        CERTH1_01[j] = PML_C01(sigma_th_E[j]);
+        CDRTH1_00[j] = PML_C00(sigma_th_E[j]);
+        CDRTH1_01[j] = PML_C01(sigma_th_E[j]);
     }
 
     for(int k = 1; k <= Nph - 1; k++){
-        CERPH_00[k] = PML_C00(sigma_ph_E[k]);
-        CERPH_01[k] = PML_C01(sigma_ph_E[k]);
+        CDRPH_00[k] = PML_C00(sigma_ph_E[k]);
+        CDRPH_01[k] = PML_C01(sigma_ph_E[k]);
     }
 
     for(int k = 1; k <= Nph - 1; k++){
-        CETHPH_00[k] = PML_C00(sigma_ph_E[k]);
-        CETHPH_01[k] = PML_C01(sigma_ph_E[k]);
+        CDTHPH_00[k] = PML_C00(sigma_ph_E[k]);
+        CDTHPH_01[k] = PML_C01(sigma_ph_E[k]);
     }
 
     for(int i = 1; i <= Nr - 1; i++){
-        CETHR_10[i] = PML_C10(r(i), sigma_r_tilde_E[i]);
-        CETHR_11[i] = PML_C11(r(i), sigma_r_tilde_E[i]);
+        CDTHR_10[i] = PML_C10(r(i), sigma_r_tilde_E[i]);
+        CDTHR_11[i] = PML_C11(r(i), sigma_r_tilde_E[i]);
     }
 
     for(int i = 1; i <= Nr - 1; i++){
-        CETHR_TILDE_00[i] = PML_C00(sigma_r_E[i]);
-        CETHR_TILDE_01[i] = PML_C01(sigma_r_E[i]);
+        CDTHR_TILDE_00[i] = PML_C00(sigma_r_E[i]);
+        CDTHR_TILDE_01[i] = PML_C01(sigma_r_E[i]);
     }
 
     for(int i = 1; i <= Nr - 1; i++){
-        CEPHR_10[i] = PML_C10(r(i), sigma_r_tilde_E[i]);
-        CEPHR_11[i] = PML_C11(r(i), sigma_r_tilde_E[i]);
+        CDPHR_10[i] = PML_C10(r(i), sigma_r_tilde_E[i]);
+        CDPHR_11[i] = PML_C11(r(i), sigma_r_tilde_E[i]);
     }
 
     for(int i = 1; i <= Nr - 1; i++){
-        CEPHR_TILDE_00[i] = PML_C00(sigma_r_E[i]);
-        CEPHR_TILDE_01[i] = PML_C01(sigma_r_E[i]);
+        CDPHR_TILDE_00[i] = PML_C00(sigma_r_E[i]);
+        CDPHR_TILDE_01[i] = PML_C01(sigma_r_E[i]);
     }
 
     for(int j = 1; j <= Nth - 1; j++){
-        CEPHTH_00[j] = PML_C00(sigma_th_E[j]);
-        CEPHTH_01[j] = PML_C01(sigma_th_E[j]);
+        CDPHTH_00[j] = PML_C00(sigma_th_E[j]);
+        CDPHTH_01[j] = PML_C01(sigma_th_E[j]);
     }
 
     for(int i = 1; i <= Nr - 1; i++){

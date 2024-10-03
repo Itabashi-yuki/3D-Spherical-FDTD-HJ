@@ -8,7 +8,9 @@ void update_Hr_PML(double ***Hr, double ***Hrth1, double ***Hrth2, double ***Hrp
                      double ****Eth, double ****Eph, double *CHRTH1_00, double *CHRTH1_01,
                       double *CHRPH_00, double *CHRPH_01, double ****check, int n){
     int NEW = n % 2;
-
+    
+    omp_set_num_threads(8);
+    #pragma omp parallel for collapse(3)
     for(int i = 1; i <= Nr - 1; i++){
         for(int j = 0; j < Nth; j++){
             for(int k = 0; k < PML_L; k++){
@@ -17,10 +19,12 @@ void update_Hr_PML(double ***Hr, double ***Hrth1, double ***Hrth2, double ***Hrp
                 Hrph[i][j][k] = CHRPH_00[k] * Hrph[i][j][k] + CHRPH_01[k] / MU0 / r(i) / std::sin(theta(j + 0.5)) / dph * (Eth[NEW][i][j][k+1] - Eth[NEW][i][j][k]);
                 Hr[i][j][k] = Hrth1[i][j][k] + Hrth2[i][j][k] + Hrph[i][j][k];
                 // check[NEW][i][j][k] += 1.0;
+                // Hr[PML_L+1][j][k] = 0.0;
             }
         }
     }
 
+    #pragma omp parallel for collapse(3)
     for(int i = 1; i <= Nr - 1; i++){
         for(int j = 0; j < Nth; j++){
             for(int k = Nph - PML_L; k < Nph; k++){
@@ -29,10 +33,12 @@ void update_Hr_PML(double ***Hr, double ***Hrth1, double ***Hrth2, double ***Hrp
                 Hrph[i][j][k] = CHRPH_00[k] * Hrph[i][j][k] + CHRPH_01[k] / MU0 / r(i) / std::sin(theta(j + 0.5)) / dph * (Eth[NEW][i][j][k+1] - Eth[NEW][i][j][k]);
                 Hr[i][j][k] = Hrth1[i][j][k] + Hrth2[i][j][k] + Hrph[i][j][k];
                 // check[NEW][i][j][k] += 1.0;
+                // Hr[PML_L+1][j][k] = 0.0;
             }
         }
     }
 
+    #pragma omp parallel for collapse(3)
     for(int i = 1; i <= PML_L; i++){
         for(int j = 0; j < Nth; j++){
             for(int k = PML_L; k < Nph - PML_L; k++){
@@ -45,6 +51,7 @@ void update_Hr_PML(double ***Hr, double ***Hrth1, double ***Hrth2, double ***Hrp
         }
     }
 
+    #pragma omp parallel for collapse(3)
     for(int i = Nr - PML_L; i <= Nr - 1; i++){
         for(int j = 0; j < Nth; j++){
             for(int k = PML_L; k < Nph - PML_L; k++){
@@ -57,6 +64,7 @@ void update_Hr_PML(double ***Hr, double ***Hrth1, double ***Hrth2, double ***Hrp
         }
     }
 
+    #pragma omp parallel for collapse(3)
     for(int i = PML_L + 1; i <= Nr - PML_L - 1; i++){
         for(int j = 0; j < PML_L; j++){
             for(int k = PML_L; k < Nph - PML_L; k++){
@@ -69,6 +77,7 @@ void update_Hr_PML(double ***Hr, double ***Hrth1, double ***Hrth2, double ***Hrp
         }
     }
 
+    #pragma omp parallel for collapse(3)
     for(int i = PML_L + 1; i <= Nr - PML_L - 1; i++){
         for(int j = Nth - PML_L; j < Nth; j++){
             for(int k = PML_L; k < Nph - PML_L; k++){
@@ -87,6 +96,7 @@ void update_Hth_PML(double ****Hth, double ***Hthr, double ***Hthph, double ****
     int NEW = n % 2;
     int OLD = (n + 1) % 2;
 
+    #pragma omp parallel for collapse(3)
     for(int i = 0; i < Nr; i++){
         for(int j = 1; j <= Nth - 1; j++){
             for(int k = 0; k < PML_L; k++){
@@ -98,10 +108,12 @@ void update_Hth_PML(double ****Hth, double ***Hthr, double ***Hthph, double ****
                                 + CHTHR_11[i] / dt * (Hthr_tilde[NEW][i][j][k] - Hthr_tilde[OLD][i][j][k]);
                 Hth[NEW][i][j][k] = Hthr[i][j][k] + Hthph[i][j][k];
                 // check[NEW][i][j][k] += 1.0;
+                // Hth[NEW][PML_L][j][k] = 0.0;
             }
         }
     }
 
+    #pragma omp parallel for collapse(3)
     for(int i = 0; i < Nr; i++){
         for(int j = 1; j <= Nth - 1; j++){
             for(int k = Nph - PML_L; k < Nph; k++){
@@ -110,10 +122,12 @@ void update_Hth_PML(double ****Hth, double ***Hthr, double ***Hthph, double ****
                 Hthr[i][j][k] = CHTHR_10[i] * Hthr[i][j][k] + CHTHR_11[i] / dt * (Hthr_tilde[NEW][i][j][k] - Hthr_tilde[OLD][i][j][k]);
                 Hth[NEW][i][j][k] = Hthr[i][j][k] + Hthph[i][j][k];
                 // check[NEW][i][j][k] += 1.0;
+                // Hth[NEW][PML_L][j][k] = 0.0;
             }
         }
     }
 
+    #pragma omp parallel for collapse(3)
     for(int i = 0; i < PML_L; i++){
         for(int j = 1; j <= Nth - 1; j++){
             for(int k = PML_L; k < Nph - PML_L; k++){
@@ -126,6 +140,7 @@ void update_Hth_PML(double ****Hth, double ***Hthr, double ***Hthph, double ****
         }
     }
 
+    #pragma omp parallel for collapse(3)
     for(int i = Nr - PML_L; i < Nr; i++){
         for(int j = 1; j <= Nth - 1; j++){
             for(int k = PML_L; k < Nph - PML_L; k++){
@@ -138,6 +153,7 @@ void update_Hth_PML(double ****Hth, double ***Hthr, double ***Hthph, double ****
         }
     }
 
+    #pragma omp parallel for collapse(3)
     for(int i = PML_L; i < Nr - PML_L; i++){
         for(int j = 1; j <= PML_L; j++){
             for(int k = PML_L; k < Nph - PML_L; k++){
@@ -150,6 +166,7 @@ void update_Hth_PML(double ****Hth, double ***Hthr, double ***Hthph, double ****
         }
     }
 
+    #pragma omp parallel for collapse(3)
     for(int i = PML_L; i < Nr - PML_L; i++){
         for(int j = Nth - PML_L; j <= Nth - 1; j++){
             for(int k = PML_L; k < Nph - PML_L; k++){
@@ -168,6 +185,7 @@ void update_Hph_PML(double ****Hph, double ***Hphr, double ***Hphth, double ****
     int NEW = n % 2;
     int OLD = (n + 1) % 2;
 
+    #pragma omp parallel for collapse(3)
     for(int i = 0; i < Nr; i++){
         for(int j = 0; j < Nth; j++){
             for(int k = 1; k <= PML_L; k++){
@@ -176,10 +194,12 @@ void update_Hph_PML(double ****Hph, double ***Hphr, double ***Hphth, double ****
                 Hphr[i][j][k] = CHPHR_10[i] * Hphr[i][j][k] + CHPHR_11[i] / dt * (Hphr_tilde[NEW][i][j][k] - Hphr_tilde[OLD][i][j][k]);
                 Hph[NEW][i][j][k] = Hphth[i][j][k] + Hphr[i][j][k];
                 // check[NEW][i][j][k] += 1.0;
+                // Hph[NEW][PML_L][j][k] = 0.0;
             }
         }
     }
 
+    #pragma omp parallel for collapse(3)
     for(int i = 0; i < Nr; i++){
         for(int j = 0; j < Nth; j++){
             for(int k = Nph - PML_L; k <= Nph - 1; k++){
@@ -188,10 +208,12 @@ void update_Hph_PML(double ****Hph, double ***Hphr, double ***Hphth, double ****
                 Hphr[i][j][k] = CHPHR_10[i] * Hphr[i][j][k] + CHPHR_11[i] / dt * (Hphr_tilde[NEW][i][j][k] - Hphr_tilde[OLD][i][j][k]);
                 Hph[NEW][i][j][k] = Hphth[i][j][k] + Hphr[i][j][k];
                 // check[NEW][i][j][k] += 1.0;
+                // Hph[NEW][PML_L][j][k] = 0.0;
             }
         }
     }
 
+    #pragma omp parallel for collapse(3)
     for(int i = 0; i < PML_L; i++){
         for(int j = 0; j < Nth; j++){
             for(int k = PML_L + 1; k <= Nph - PML_L - 1; k++){
@@ -204,6 +226,7 @@ void update_Hph_PML(double ****Hph, double ***Hphr, double ***Hphth, double ****
         }
     }
 
+    #pragma omp parallel for collapse(3)
     for(int i = Nr - PML_L; i < Nr; i++){
         for(int j = 0; j < Nth; j++){
             for(int k = PML_L + 1; k <= Nph - PML_L - 1; k++){
@@ -227,6 +250,7 @@ void update_Hph_PML(double ****Hph, double ***Hphr, double ***Hphth, double ****
                 //     }
                 // }
 
+    #pragma omp parallel for collapse(3)
     for(int i = PML_L; i < Nr - PML_L; i++){
         for(int j = 0; j < PML_L; j++){
             for(int k = PML_L + 1; k <= Nph - PML_L - 1; k++){
@@ -239,6 +263,7 @@ void update_Hph_PML(double ****Hph, double ***Hphr, double ***Hphth, double ****
         }
     }
 
+    #pragma omp parallel for collapse(3)
     for(int i = PML_L; i < Nr - PML_L; i++){
         for(int j = Nth - PML_L; j < Nth; j++){
             for(int k = PML_L + 1; k <= Nph - PML_L - 1; k++){
@@ -256,6 +281,7 @@ void update_Hth_tilde(double ***Hth_tilde, double ****Hth, double *CHTH_TILDE, d
     int NEW = n % 2;
     int OLD = (n + 1) % 2;
 
+    #pragma omp parallel for collapse(3)
     for(int i = 0; i < Nr; i++){
         for(int j = 1; j <= Nth - 1; j++){
             for(int k = 0; k < PML_L; k++){
@@ -265,6 +291,7 @@ void update_Hth_tilde(double ***Hth_tilde, double ****Hth, double *CHTH_TILDE, d
         }
     }
 
+    #pragma omp parallel for collapse(3)
     for(int i = 0; i < Nr; i++){
         for(int j = 1; j <= Nth - 1; j++){
             for(int k = Nph - PML_L; k < Nph; k++){
@@ -274,6 +301,7 @@ void update_Hth_tilde(double ***Hth_tilde, double ****Hth, double *CHTH_TILDE, d
         }
     }
 
+    #pragma omp parallel for collapse(3)
     for(int i = 0; i < PML_L + 1; i++){
         for(int j = 1; j <= Nth - 1; j++){
             for(int k = PML_L; k < Nph - PML_L; k++){
@@ -283,6 +311,7 @@ void update_Hth_tilde(double ***Hth_tilde, double ****Hth, double *CHTH_TILDE, d
         }
     }
 
+    #pragma omp parallel for collapse(3)
     for(int i = Nr - PML_L - 1; i < Nr; i++){
         for(int j = 1; j <= Nth - 1; j++){
             for(int k = PML_L; k < Nph - PML_L; k++){
@@ -292,6 +321,7 @@ void update_Hth_tilde(double ***Hth_tilde, double ****Hth, double *CHTH_TILDE, d
         }
     }
 
+    #pragma omp parallel for collapse(3)
     for(int i = PML_L + 1; i < Nr - PML_L - 1; i++){
         for(int j = 1; j <= PML_L; j++){
             for(int k = PML_L; k < Nph - PML_L; k++){
@@ -301,6 +331,7 @@ void update_Hth_tilde(double ***Hth_tilde, double ****Hth, double *CHTH_TILDE, d
         }
     }
 
+    #pragma omp parallel for collapse(3)
     for(int i = PML_L + 1; i < Nr - PML_L - 1; i++){
         for(int j = Nth - PML_L; j <= Nth - 1; j++){
             for(int k = PML_L; k < Nph - PML_L; k++){
@@ -315,6 +346,7 @@ void update_Hph_tilde(double ***Hph_tilde, double ****Hph, double *CHPH_TILDE, d
     int NEW = n % 2;
     int OLD = (n + 1) % 2;
 
+    #pragma omp parallel for collapse(3)
     for(int i = 0; i < Nr; i++){
         for(int j = 0; j < Nth; j++){
             for(int k = 1; k <= PML_L; k++){
@@ -324,6 +356,7 @@ void update_Hph_tilde(double ***Hph_tilde, double ****Hph, double *CHPH_TILDE, d
         }
     }
 
+    #pragma omp parallel for collapse(3)
     for(int i = 0; i < Nr; i++){
         for(int j = 0; j < Nth; j++){
             for(int k = Nph - PML_L; k <= Nph - 1; k++){
@@ -333,6 +366,7 @@ void update_Hph_tilde(double ***Hph_tilde, double ****Hph, double *CHPH_TILDE, d
         }
     }
 
+    #pragma omp parallel for collapse(3)
     for(int i = 0; i < PML_L + 1; i++){
         for(int j = 0; j < Nth; j++){
             for(int k = PML_L + 1; k <= Nph - PML_L - 1; k++){
@@ -342,6 +376,7 @@ void update_Hph_tilde(double ***Hph_tilde, double ****Hph, double *CHPH_TILDE, d
         }
     }
 
+    #pragma omp parallel for collapse(3)
     for(int i = Nr - PML_L - 1; i < Nr; i++){
         for(int j = 0; j < Nth; j++){
             for(int k = PML_L + 1; k <= Nph - PML_L - 1; k++){
@@ -351,6 +386,7 @@ void update_Hph_tilde(double ***Hph_tilde, double ****Hph, double *CHPH_TILDE, d
         }
     }
 
+    #pragma omp parallel for collapse(3)
     for(int i = PML_L + 1; i < Nr - PML_L - 1; i++){
         for(int j = 0; j < PML_L; j++){
             for(int k = PML_L + 1; k <= Nph - PML_L - 1; k++){
@@ -360,6 +396,7 @@ void update_Hph_tilde(double ***Hph_tilde, double ****Hph, double *CHPH_TILDE, d
         }
     }
 
+    #pragma omp parallel for collapse(3)
     for(int i = PML_L + 1; i < Nr - PML_L - 1; i++){
         for(int j = Nth - PML_L; j < Nth; j++){
             for(int k = PML_L + 1; k <= Nph - PML_L - 1; k++){
