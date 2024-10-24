@@ -74,7 +74,6 @@ void initialize_Plasma(Eigen::Matrix3d ***S, Eigen::Matrix3d ***B){
                 // ); 
 
 
-
                 double Omg_0 = 1.0 / dt + nu / 2.0;
                 double Omg_0_prime = 1.0 / dt - nu / 2.0;
                 // double Omg_c = CHARGE_e * F0 / MASS_e;

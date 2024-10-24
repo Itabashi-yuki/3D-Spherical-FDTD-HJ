@@ -148,7 +148,7 @@ int main(){
     // }
     // int n0 = cal_obs_n0();
     double st, en;
-    int n0 = 10;
+    int n0 = 1;
     // std::cout << Nt << std::endl;
     // exit(0);
     std::ofstream ofs_div_time( PATH + "data/" + global_dirName +"div_time_dt_"+ std::to_string(exp_Ne) + ".dat", std::ios::app);
@@ -168,7 +168,7 @@ int main(){
 
     // double Ave = 0.;
     // std::ofstream ofs_source(PATH + "data/" + global_dirName + "source.dat", std::ios::app);
-    for(int n = 1; n < 200; n++){
+    for(int n = 1; n < 90; n++){
         int NEW = n % 2;
         if(n % 100 == 0){
             std::cout << n << " / " << Nt << std::endl;

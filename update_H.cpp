@@ -7,7 +7,7 @@ void update_Hr(double ***Hr, double ****Eth, double ****Eph, double ****check, i
     int NEW = n % 2;
     omp_set_num_threads(8);
     #pragma omp parallel for collapse(3)
-    for(int i = PML_L + 1; i <= Nr - PML_L - 1; i++){
+    for(int i = 1; i <= Nr - PML_L - 1; i++){
         for(int j = PML_L; j < Nth - PML_L; j++){
             for(int k = PML_L; k < Nph - PML_L; k++){
                 Hr[i][j][k] = Hr[i][j][k] - dt / MU0 / dth / r(i) / std::sin(theta(j+0.5)) 
@@ -38,7 +38,7 @@ void update_Hth(double ****Hth, double ***Er, double ****Eph, double **Rs, doubl
     }
 
     #pragma omp parallel for collapse(3)
-    for(int i = PML_L + 1; i < Nr - PML_L; i++){
+    for(int i = 1; i < Nr - PML_L; i++){
         for(int j = PML_L + 1; j <= Nth - PML_L - 1; j++){
             for(int k = PML_L; k < Nph - PML_L; k++){
                 Hth[NEW][i][j][k] = Hth[OLD][i][j][k] - dt / MU0 / dph / r(i + 0.5) / std::sin(theta(j)) * ( Er[i][j][k+1] - Er[i][j][k] )
@@ -67,7 +67,7 @@ void update_Hph(double ****Hph, double ***Er, double ****Eth, double **Rs, doubl
     }
 
     #pragma omp parallel for collapse(3)
-    for(int i = PML_L + 1; i < Nr - PML_L; i++){
+    for(int i = 1; i < Nr - PML_L; i++){
         for(int j = PML_L; j < Nth - PML_L; j++){
             for(int k = PML_L + 1; k <= Nph - PML_L - 1; k++){
                 Hph[NEW][i][j][k] = Hph[OLD][i][j][k] - dt / MU0 / dr / r(i + 0.5) * ( r(i + 1.0) * Eth[NEW][i+1][j][k] - r(i) * Eth[NEW][i][j][k] )
