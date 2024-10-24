@@ -30,15 +30,15 @@ void update_Er_PML(double ***Er, double ****Dr, double ****Hth, double ****Hph, 
         }
     }
 
-    // #pragma omp parallel for collapse(3)
-    // for(int i = 0; i < PML_L; i++){
-    //     for(int j = 1; j <= Nth - 1; j++){
-    //         for(int k = PML_L + 1; k <= Nph - PML_L - 1; k++){
-    //             Er[i][j][k] = Er[i][j][k] + 1.0 / EPS0 * ( Dr[NEW][i][j][k] - Dr[OLD][i][j][k] ) - dt / EPS0 * Jr[OLD][i][j][k]; 
-    //             // check[NEW][i][j][k] += 1.0;
-    //         }
-    //     }
-    // }
+    #pragma omp parallel for collapse(3)
+    for(int i = 0; i < PML_L; i++){
+        for(int j = 1; j <= Nth - 1; j++){
+            for(int k = PML_L + 1; k <= Nph - PML_L - 1; k++){
+                Er[i][j][k] = Er[i][j][k] + 1.0 / EPS0 * ( Dr[NEW][i][j][k] - Dr[OLD][i][j][k] ) - dt / EPS0 * Jr[OLD][i][j][k]; 
+                // check[NEW][i][j][k] += 1.0;
+            }
+        }
+    }
 
     #pragma omp parallel for collapse(3)
     for(int i = Nr - PML_L; i < Nr; i++){

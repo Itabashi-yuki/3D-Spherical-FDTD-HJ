@@ -19,15 +19,15 @@ void update_Er(double ***Er, double ****Hth, double ****Hph, double ****Jr, doub
         }
     }
     
-    #pragma omp parallel for collapse(3)
-    for(int i = 0; i < PML_L; i++){
-        for(int j = PML_L + 1; j <= Nth - PML_L - 1; j++){
-            for(int k = PML_L + 1; k <= Nph - PML_L -1 ; k++){
-                Er[i][j][k] = 0.0;
-                // check[NEW][i][j][k] += 2.0;
-            }
-        }
-    }
+    // #pragma omp parallel for collapse(3)
+    // for(int i = 0; i < PML_L; i++){
+    //     for(int j = PML_L + 1; j <= Nth - PML_L - 1; j++){
+    //         for(int k = PML_L + 1; k <= Nph - PML_L -1 ; k++){
+    //             Er[i][j][k] = 0.0;
+    //             // check[NEW][i][j][k] += 2.0;
+    //         }
+    //     }
+    // }
 }
 
 void update_Eth(double ****Eth, double ***Hr, double ****Hph, double ****Jth, double ****check, int n){

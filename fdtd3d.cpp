@@ -141,7 +141,7 @@ int main(){
     // }
     // int n0 = cal_obs_n0();
     double st, en;
-    int n0 = 1000;
+    int n0 = 1;
     // std::cout << Nt << std::endl;
     // exit(0);
     std::ofstream ofs_div_time( PATH + "data/" + global_dirName +"div_time_dt_"+ std::to_string(exp_Ne) + ".dat", std::ios::app);
@@ -156,7 +156,7 @@ int main(){
 
     // double Ave = 0.;
     // std::ofstream ofs_source(PATH + "data/" + global_dirName + "source.dat", std::ios::app);
-    for(int n = 1; n < Nt; n++){
+    for(int n = 1; n < 90; n++){
         int NEW = n % 2;
         if(n % 100 == 0){
             std::cout << n << " / " << Nt << std::endl;
@@ -212,7 +212,7 @@ int main(){
         //     ofs << k * R0 * dph * 1.0e-3 << " " << Erth1[NEW][Nr / 2][Nth / 2][k] << " " << Erth2[NEW][Nr / 2][Nth / 2][k] << " " << Erph[NEW][Nr / 2][Nth / 2][k] 
         //             << " " << Ethph[NEW][Nr / 2][Nth / 2][k] << " " << Ethr[NEW][Nr / 2][Nth / 2][k] << " " << Ethr_tilde[NEW][Nr / 2][Nth / 2][k] << std::endl;          
         // }
-        // output_E(Er, Eth, Eph, Hr, Hth, Hph, Jr, Jth, Jph, Dr, Dth, Dph, n, n0);
+        output_E(Er, Eth, Eph, Hr, Hth, Hph, Jr, Jth, Jph, Dr, Dth, Dph, n, n0);
 
         if(std::abs(Er[Nr-5][Nth/2][1]) > 10000){
             ofs_div_time << Er[obs_Nr][obs_Nth][obs_Nph] << " " << n * dt << std::endl;

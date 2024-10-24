@@ -68,8 +68,8 @@ void initialize_Plasma(Eigen::Matrix3d ***S, Eigen::Matrix3d ***B){
                 double Omg_0 = 1.0 / dt + nu / 2.0;
                 double Omg_0_prime = 1.0 / dt - nu / 2.0;
                 double Omg_c = CHARGE_e * F0 / MASS_e;
-                // double Omg_p = cal_omg_p(Ne);
-                double Omg_p = cal_omg_p(Ne_a[i]);
+                double Omg_p = cal_omg_p(Ne);
+                // double Omg_p = cal_omg_p(Ne_a[i]);
 
                 Eigen::Matrix3d I = Eigen::Matrix3d::Identity();
                 Eigen::Matrix3d A, R1, R2;
