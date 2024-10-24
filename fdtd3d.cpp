@@ -50,6 +50,13 @@ int main(){
     double ***Hth_tilde = allocate_3d(Nr, Nth + 1, Nph, 0.0);
     double ***Hph_tilde = allocate_3d(Nr, Nth, Nph + 1, 0.0);
     
+    double ***Bth = allocate_3d(2, Nth + 1, Nph, 0.0);
+    double ***Bph = allocate_3d(2, Nth, Nph + 1, 0.0);
+    double **Bthr = allocate_2d(Nth + 1, Nph, 0.0);
+    double **Bthph = allocate_2d(Nth + 1, Nph, 0.0);
+    double **Bphr = allocate_2d(Nth, Nph + 1, 0.0);
+    double **Bphth = allocate_2d(Nth, Nph + 1, 0.0);
+
     double ****Jr = allocate_4d(2, Nr, Nth + 1, Nph + 1, 0.0);
     double ****Jth = allocate_4d(2, Nr + 1, Nth, Nph + 1, 0.0);
     double ****Jph = allocate_4d(2, Nr + 1, Nth + 1, Nph, 0.0);
@@ -141,7 +148,7 @@ int main(){
     // }
     // int n0 = cal_obs_n0();
     double st, en;
-    int n0 = 1000;
+    int n0 = 10;
     // std::cout << Nt << std::endl;
     // exit(0);
     std::ofstream ofs_div_time( PATH + "data/" + global_dirName +"div_time_dt_"+ std::to_string(exp_Ne) + ".dat", std::ios::app);
@@ -154,9 +161,14 @@ int main(){
         Er0[i] = std::complex <double> {0., 0.};
     }
 
+    /* 表面インピーダンス法 */
+    double **Rs = allocate_2d(Nth + 1, Nph + 1, 0.0);
+    double **Ls = allocate_2d(Nth + 1, Nph + 1, 0.0);
+    intialize_surface_impedance(Rs, Ls);
+
     // double Ave = 0.;
     // std::ofstream ofs_source(PATH + "data/" + global_dirName + "source.dat", std::ios::app);
-    for(int n = 1; n < Nt; n++){
+    for(int n = 1; n < 200; n++){
         int NEW = n % 2;
         if(n % 100 == 0){
             std::cout << n << " / " << Nt << std::endl;
@@ -187,16 +199,18 @@ int main(){
         Er[int((source_r) / dr)][int((source_th) / Rdth)][int((source_ph) / Rdph)] -= dt / EPS0 * source_J(t);
 
         update_Hr(Hr, Eth, Eph, check, n);
-        update_Hth(Hth, Er, Eph, check, n);
-        update_Hph(Hph, Er, Eth, check, n);
+        update_Hth(Hth, Er, Eph, Rs, Ls, check, n);
+        update_Hph(Hph, Er, Eth, Rs, Ls, check, n);
 
 
         update_Hr_PML(Hr, Hrth1, Hrth2, Hrph, Eth, Eph,
                          CHRTH1_00, CHRTH1_01, CHRPH_00, CHRPH_01, check, n);
-        update_Hth_PML(Hth, Hthr, Hthph, Hthr_tilde, Er, Eph_tilde,
+        update_Hth_PML(Hth, Hthr, Hthph, Hthr_tilde, Er, Eph, Eph_tilde,
+                         Bth, Bthr, Bthph, Rs, Ls,
                          CHTHPH_00, CHTHPH_01, CHTHR_TILDE_00, CHTHR_TILDE_01,
                          CHTHR_10, CHTHR_11, check, n);
-        update_Hph_PML(Hph, Hphr, Hphth, Hphr_tilde, Er, Eth_tilde,
+        update_Hph_PML(Hph, Hphr, Hphth, Hphr_tilde, Er, Eth, Eth_tilde,
+                         Bph, Bphr, Bphth, Rs, Ls,
                          CHPHTH_00, CHPHTH_01, CHPHR_TILDE_00, CHPHR_TILDE_01,
                           CHPHR_10, CHPHR_11, check, n);
         update_Hth_tilde(Hth_tilde, Hth, CHTH_TILDE, check, n);
@@ -212,7 +226,7 @@ int main(){
         //     ofs << k * R0 * dph * 1.0e-3 << " " << Erth1[NEW][Nr / 2][Nth / 2][k] << " " << Erth2[NEW][Nr / 2][Nth / 2][k] << " " << Erph[NEW][Nr / 2][Nth / 2][k] 
         //             << " " << Ethph[NEW][Nr / 2][Nth / 2][k] << " " << Ethr[NEW][Nr / 2][Nth / 2][k] << " " << Ethr_tilde[NEW][Nr / 2][Nth / 2][k] << std::endl;          
         // }
-        // output_E(Er, Eth, Eph, Hr, Hth, Hph, Jr, Jth, Jph, Dr, Dth, Dph, n, n0);
+        output_E(Er, Eth, Eph, Hr, Hth, Hph, Jr, Jth, Jph, Dr, Dth, Dph, n, n0);
 
         if(std::abs(Er[Nr-5][Nth/2][1]) > 10000){
             ofs_div_time << Er[obs_Nr][obs_Nth][obs_Nph] << " " << n * dt << std::endl;
@@ -238,21 +252,26 @@ int main(){
         ofs_Er0 << k * R0 * dph * 1e-3 << " " << std::abs( Er0[k] ) << " "
             << std::arg( Er0[k] ) << std::endl;
     }
+    ofs_Er0.close();
 
-    // std::ofstream ofs_check( PATH + "data/"+ global_dirName + "check.dat");
-    // ofs_check << "# n, i, j, k, check" << std::endl;
-    //     for(int n = 0; n < 2; n++){
-    //         for(int i = 0; i < Nr; i++){
-    //             for(int j = 0; j < Nth; j++){
-    //                 for(int k = 0; k < Nph; k++){
-    //                 ofs_check << n << " " << i << " " << j << " " << k << " " << check[n][i][j][k] << std::endl;
-    //                 }
-    //                 ofs_check << std::endl;
-    //             }
-    //             ofs_check << std::endl;
-    //         }
-    //         ofs_check << std::endl;
-    //     }
+    std::ofstream ofs_diurnal_pattern( PATH + "data/" + global_dirName + "diurnal_pattern_900km.dat" );
+    ofs_diurnal_pattern << Hour << " " << Min << " " << Er0[N_diurnal_pattern_pos] << std::endl;
+    ofs_diurnal_pattern.close();
+
+    std::ofstream ofs_check( PATH + "data/"+ global_dirName + "check.dat");
+    ofs_check << "# n, i, j, k, check" << std::endl;
+        for(int n = 0; n < 2; n++){
+            for(int i = 0; i < Nr; i++){
+                for(int j = 0; j < Nth; j++){
+                    for(int k = 0; k < Nph; k++){
+                    ofs_check << n << " " << i << " " << j << " " << k << " " << check[n][i][j][k] << std::endl;
+                    }
+                    ofs_check << std::endl;
+                }
+                ofs_check << std::endl;
+            }
+            ofs_check << std::endl;
+        }
 
     // for(int i = 0; i < Nr; i++){
     //     for(int j = 0; j < Nth; j++){
