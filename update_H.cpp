@@ -32,7 +32,7 @@ void update_Hth(double ****Hth, double ***Er, double ****Eph, double **Rs, doubl
             double c2 = dt * r(1.0) / ( MU0 * r(0.5) * dr + dt * r(0.0) * (Rs[j][k] / 2.0 + Ls[j][k] / dt) );
 
             Hth[NEW][0][j][k] = c1 * Hth[OLD][0][j][k] + c2 * Eph[NEW][1][j][k];
-            check[NEW][0][j][k] += 1.0;
+            // check[NEW][0][j][k] += 1.0;
         
         }
     }
@@ -43,7 +43,7 @@ void update_Hth(double ****Hth, double ***Er, double ****Eph, double **Rs, doubl
             for(int k = PML_L; k < Nph - PML_L; k++){
                 Hth[NEW][i][j][k] = Hth[OLD][i][j][k] - dt / MU0 / dph / r(i + 0.5) / std::sin(theta(j)) * ( Er[i][j][k+1] - Er[i][j][k] )
                                 + dt / MU0 / dr / r(i + 0.5) * ( r(i + 1.0) * Eph[NEW][i+1][j][k] - r(i) * Eph[NEW][i][j][k] );
-                check[NEW][i][j][k] += 1.0;
+                // check[NEW][i][j][k] += 1.0;
                 // Hth[NEW][PML_L][j][k] = 0.0;
             }
         }
@@ -63,6 +63,7 @@ void update_Hph(double ****Hph, double ***Er, double ****Eth, double **Rs, doubl
             
             Hph[NEW][0][j][k] = c1 * Hph[OLD][0][j][k] + 
                                         c2 * ( - r(1.0) / dr * Eth[NEW][1][j][k] + ( Er[0][j+1][k] - Er[0][j][k] ) / dth);
+            // check[NEW][0][j][k] += 1.0;
         }
     }
 

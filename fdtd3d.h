@@ -81,18 +81,19 @@ constexpr double PML_R { 1.0e-6 };
 
 /* 電流源パラメタ */
 // constexpr double sigma_J { 12 * dt };
-constexpr double t0 { 1.0 / f0 };
 constexpr double current_dt { 7.29756e-07 };
-// constexpr double sigma_J { 18.0 * current_dt };
+constexpr double sigma_J { 18.0 * current_dt };
 // constexpr double sigma_J { 1.0 / 2.0 / M_PI / f0 };
-constexpr double sigma_J { 0.25 * t0 };
-// constexpr double t0 { 6.0 * sigma_J };
+constexpr double t0 { 6.0 * sigma_J };
+
+// constexpr double t0 { 1.0 / f0 };
+// constexpr double sigma_J { 0.25 * t0 };
 
 /* 電流源位置 */
 // constexpr double source_r { (PML_L + 1) * dr };
 // constexpr double source_th { Rth / 2.0 };
 // constexpr double source_ph { 50.0e3 };
-constexpr double source_r { Rr / 2.0 };
+constexpr double source_r { 1.0 };
 constexpr double source_th { Rth / 2.0 };
 constexpr double source_ph { Rph / 2.0 };
 

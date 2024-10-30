@@ -4,7 +4,7 @@
 #include "fdtd3d.h"
 
 double sig_s(double th, double ph){
-    return 1.0e-3;
+    return 1.0e8;
 }
 
 void intialize_surface_impedance(double **Rs, double **Ls){
