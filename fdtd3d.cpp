@@ -156,7 +156,7 @@ int main(){
 
     // double Ave = 0.;
     // std::ofstream ofs_source(PATH + "data/" + global_dirName + "source.dat", std::ios::app);
-    for(int n = 1; n < 90; n++){
+    for(int n = 1; n < 300; n++){
         int NEW = n % 2;
         if(n % 100 == 0){
             std::cout << n << " / " << Nt << std::endl;

@@ -13,7 +13,7 @@ void output_E(double ***Er, double ****Eth, double ****Eph, double ***Hr, double
         std::ofstream ofs_E_rph( PATH + "data/" + global_dirName + "Erph_" + std::to_string(n) + ".dat");
         std::ofstream ofs_D_rph( PATH + "data/" + global_dirName + "Drph_" + std::to_string(n) + ".dat");
 
-        ofs_E_thph << "#" << n0 * dt << "[s]ごと出力, 以下は" << n*dt << "[s]における結果" <<  std::endl;
+        // ofs_E_thph << "#" << n0 * dt << "[s]ごと出力, 以下は" << n*dt << "[s]における結果" <<  std::endl;
 
         // for(int i = 0; i < Nr; i+=5){
         //     for(int j = 0; j < Nth; j+=5){
@@ -34,29 +34,29 @@ void output_E(double ***Er, double ****Eth, double ****Eph, double ***Hr, double
         //         << " " << Hph[NEW][Nr / 2][Nth /2][k] << std::endl;
         // }
         // ofs_E_thph.close();
-        for(int j = 0; j < Nth; j+=4){
-            for(int k = 0; k < Nph; k+=10){
-                // ofs_E << j * R0 * dth * 1e-3 << " " << Er[Nr / 2][j][Nph / 2] << std::endl;
-                ofs_E_thph << j * R0 * dth * 1.0e-3 << " " << k * R0 * dph * 1.0e-3 << " " << Er[Nr / 2][j][k] << " " << Eth[NEW][Nr / 2][j][k] 
-                << " " << Eph[NEW][Nr / 2][j][k] << " " << Hr[Nr / 2][j][k] << " " << Hth[NEW][Nr / 2][j][k] 
-                << " " << Hph[NEW][Nr / 2][j][k] << " " << Jr[NEW][Nr / 2][j][k] << " " << Jth[NEW][Nr / 2][j][k] << " " << Jph[NEW][Nr / 2][j][k] << std::endl;
+        // for(int j = 0; j < Nth; j+=4){
+        //     for(int k = 0; k < Nph; k+=10){
+        //         // ofs_E << j * R0 * dth * 1e-3 << " " << Er[Nr / 2][j][Nph / 2] << std::endl;
+        //         ofs_E_thph << j * R0 * dth * 1.0e-3 << " " << k * R0 * dph * 1.0e-3 << " " << Er[Nr / 2][j][k] << " " << Eth[NEW][Nr / 2][j][k] 
+        //         << " " << Eph[NEW][Nr / 2][j][k] << " " << Hr[Nr / 2][j][k] << " " << Hth[NEW][Nr / 2][j][k] 
+        //         << " " << Hph[NEW][Nr / 2][j][k] << " " << Jr[NEW][Nr / 2][j][k] << " " << Jth[NEW][Nr / 2][j][k] << " " << Jph[NEW][Nr / 2][j][k] << std::endl;
 
-                // ofs_E << k * R0 * dph * 1e-3 << " " << Er[Nr / 2][Nth / 2][k] << std::endl;
-            }
-            ofs_E_thph << std::endl;
-        }
-        ofs_E_thph.close();
+        //         // ofs_E << k * R0 * dph * 1e-3 << " " << Er[Nr / 2][Nth / 2][k] << std::endl;
+        //     }
+        //     ofs_E_thph << std::endl;
+        // }
+        // ofs_E_thph.close();
 
-        for(int i = 0; i < Nr; i+=4){
-            for(int j = 0; j < Nth; j+=4){
-                ofs_E_rth << i * dr * 1.0e-3 << " " << j * R0 * dth * 1.0e-3 << " " << Er[i][j][Nph / 2] << " " << Eth[NEW][i][j][Nph / 2] 
-                << " " << Eph[NEW][i][j][Nph / 2] << " " << Hr[i][j][Nph / 2] << " " << Hth[NEW][i][j][Nph / 2] 
-                << " " << Hph[NEW][i][j][Nph / 2] << " "<< Jr[NEW][i][j][Nph / 2] << " " << Jth[NEW][i][j][Nph / 2] << " " << Jph[NEW][i][j][Nph / 2] << std::endl;
-                // ofs_E << k * R0 * dph * 1e-3 << " " << Er[Nr / 2][Nth / 2][k] << std::endl;
-            }
-            ofs_E_rth << std::endl;
-        }
-        ofs_E_rth.close();
+        // for(int i = 0; i < Nr; i+=4){
+        //     for(int j = 0; j < Nth; j+=4){
+        //         ofs_E_rth << i * dr * 1.0e-3 << " " << j * R0 * dth * 1.0e-3 << " " << Er[i][j][Nph / 2] << " " << Eth[NEW][i][j][Nph / 2] 
+        //         << " " << Eph[NEW][i][j][Nph / 2] << " " << Hr[i][j][Nph / 2] << " " << Hth[NEW][i][j][Nph / 2] 
+        //         << " " << Hph[NEW][i][j][Nph / 2] << " "<< Jr[NEW][i][j][Nph / 2] << " " << Jth[NEW][i][j][Nph / 2] << " " << Jph[NEW][i][j][Nph / 2] << std::endl;
+        //         // ofs_E << k * R0 * dph * 1e-3 << " " << Er[Nr / 2][Nth / 2][k] << std::endl;
+        //     }
+        //     ofs_E_rth << std::endl;
+        // }
+        // ofs_E_rth.close();
 
         for(int i = 0; i < Nr; i+=1){
             for(int k = 0; k < Nph; k+=1){
