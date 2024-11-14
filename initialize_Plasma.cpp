@@ -13,8 +13,8 @@ double cal_nu(double z){
 
 double cal_Ne(double exp_Ne){
     double Ne = std::pow(10, exp_Ne);
-    return 0.0;
-    // return Ne;
+    // return 0.0;
+    return Ne;
 }
 
 double cal_omg_p(double Ne){
@@ -59,8 +59,12 @@ void initialize_Plasma(Eigen::Matrix3d ***S, Eigen::Matrix3d ***B){
     // exit(0);
     // std::ofstream ofs_geomag( PATH + "data/" + global_dirName + "Geomag.dat",std::ios::app);
     for(int i = Nr_iono_lower; i <= Nr_iono_upper; i++){
+                if(i % 5 == 0){
+                    std::cout << "Calc Geomag " << i << " / " << Nr_iono_upper << std::endl;
+                }
         for(int j = Nth_iono_lower; j <= Nth_iono_upper; j++){
             for(int k = Nph_iono_lower; k <= Nph_iono_upper; k++){
+
                 double alt = i * dr;
                 double th_idx = j * dth;
                 double ph_idx = k * dph;
@@ -73,13 +77,12 @@ void initialize_Plasma(Eigen::Matrix3d ***S, Eigen::Matrix3d ***B){
                 //     Dec, Inc, F0
                 // ); 
 
-
                 double Omg_0 = 1.0 / dt + nu / 2.0;
                 double Omg_0_prime = 1.0 / dt - nu / 2.0;
                 // double Omg_c = CHARGE_e * F0 / MASS_e;
                 double Omg_c = CHARGE_e / MASS_e;
-                double Omg_p = cal_omg_p(Ne);
-                // double Omg_p = cal_omg_p(Ne_a[i]);
+                // double Omg_p = cal_omg_p(Ne);
+                double Omg_p = cal_omg_p(Ne_a[i]);
 
                 Eigen::Matrix3d I = Eigen::Matrix3d::Identity();
                 Eigen::Matrix3d A, R1, R2;
@@ -90,29 +93,31 @@ void initialize_Plasma(Eigen::Matrix3d ***S, Eigen::Matrix3d ***B){
                 // if(j==Nth_iono_lower+(Nr_iono/2) && k == Nph_iono_lower+(Nr_iono/2)){
                 //     B0_components = transform_geomag(alt * 1.0e-3, th_idx, ph_idx, i, j, k);
                 // }
-                // B0_components = transform_geomag(alt * 1.0e-3, th_idx, ph_idx, i, j, k);
+                B0_components = transform_geomag(alt * 1.0e-3, th_idx, ph_idx, i, j, k);
                 
+                R2 << 0, B0_components(2), -B0_components(1),
+                    -B0_components(2), 0, B0_components(0),
+                    B0_components(1), -B0_components(0), 0;
+
+                R1 = Omg_c / 2.0 * R2;
+
                 // b << std::sin(THETA) * std::cos(PHI), std::sin(THETA) * std::sin(PHI), std::cos(THETA);
 
                 // Eigen::Vector3d b;  // 3要素ベクトル
-                b_car << std::sin(THETA) * std::cos(PHI), std::sin(THETA) * std::sin(PHI), std::cos(THETA);
+                // b_car << std::sin(THETA) * std::cos(PHI), std::sin(THETA) * std::sin(PHI), std::cos(THETA);
 
-                Eigen::Matrix3d Car2Sph;  // 3x3 行列
-                Car2Sph << std::sin(th_idx)*std::cos(ph_idx), std::sin(th_idx)*std::sin(ph_idx), std::cos(th_idx),
-                            std::cos(th_idx)*std::cos(ph_idx), std::cos(th_idx)*std::sin(ph_idx), -std::sin(th_idx),
-                            -std::sin(ph_idx), std::cos(ph_idx), 0;
+                // Eigen::Matrix3d Car2Sph;  // 3x3 行列
+                // Car2Sph << std::sin(th_idx)*std::cos(ph_idx), std::sin(th_idx)*std::sin(ph_idx), std::cos(th_idx),
+                //             std::cos(th_idx)*std::cos(ph_idx), std::cos(th_idx)*std::sin(ph_idx), -std::sin(th_idx),
+                //             -std::sin(ph_idx), std::cos(ph_idx), 0;
 
-                b_sph = Car2Sph * b_car;  // 結果も3要素ベクトル
+                // b_sph = Car2Sph * b_car;  // 結果も3要素ベクトル
 
-                R2 << 0, b_sph(2), -b_sph(1),
-                        -b_sph(2), 0, b_sph(0),
-                        b_sph(1), -b_sph(0), 0;
-
-                // R2 << 0, B0_components(2), -B0_components(1),
-                //     -B0_components(2), 0, B0_components(0),
-                //     B0_components(1), -B0_components(0), 0;
+                // R2 << 0, b_sph(2), -b_sph(1),
+                //         -b_sph(2), 0, b_sph(0),
+                //         b_sph(1), -b_sph(0), 0;
                 
-                R1 = Omg_c / 2.0 * B0 * R2;
+                // R1 = Omg_c / 2.0 * B0 * R2;
 
                 A = Omg_0 * I + R1;
 

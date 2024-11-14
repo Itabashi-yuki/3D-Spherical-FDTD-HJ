@@ -47,8 +47,8 @@ void output_E(double ***Er, double ****Eth, double ****Eph, double ***Hr, double
         // }
         // ofs_E_thph.close();
 
-        // for(int i = 0; i < Nr; i+=4){
-        //     for(int j = 0; j < Nth; j+=4){
+        // for(int i = 0; i < Nr; i+=2){
+        //     for(int j = 0; j < Nth; j+=2){
         //         ofs_E_rth << i * dr * 1.0e-3 << " " << j * R0 * dth * 1.0e-3 << " " << Er[i][j][Nph / 2] << " " << Eth[NEW][i][j][Nph / 2] 
         //         << " " << Eph[NEW][i][j][Nph / 2] << " " << Hr[i][j][Nph / 2] << " " << Hth[NEW][i][j][Nph / 2] 
         //         << " " << Hph[NEW][i][j][Nph / 2] << " "<< Jr[NEW][i][j][Nph / 2] << " " << Jth[NEW][i][j][Nph / 2] << " " << Jph[NEW][i][j][Nph / 2] << std::endl;
@@ -58,8 +58,8 @@ void output_E(double ***Er, double ****Eth, double ****Eph, double ***Hr, double
         // }
         // ofs_E_rth.close();
 
-        for(int i = 0; i < Nr; i++){
-            for(int k = 0; k < Nph; k++){
+        for(int i = 0; i < Nr; i+=2){
+            for(int k = 0; k < Nph; k+=4){
                 ofs_E_rph << i * dr * 1.0e-3 << " " << k * R0 * dph * 1.0e-3 << " " << Er[i][Nth / 2][k] << " " << Eth[NEW][i][Nth / 2][k] 
                 << " " << Eph[NEW][i][Nth / 2][k] << " " << Hr[i][Nth / 2][k] << " " << Hth[NEW][i][Nth / 2][k] 
                 << " " << Hph[NEW][i][Nth / 2][k] << " " << Jr[NEW][i][Nth / 2][k] << " " << Jth[NEW][i][Nth / 2][k] << " " << Jph[NEW][i][Nth / 2][k] << std::endl;
@@ -72,8 +72,8 @@ void output_E(double ***Er, double ****Eth, double ****Eph, double ***Hr, double
         }
         ofs_E_rph.close();
 
-        // for(int i = 0; i < Nr; i++){
-        //     for(int k = 0; k < Nph; k++){
+        // for(int i = 0; i < Nr; i+=2){
+        //     for(int k = 0; k < Nph; k+=2){
         //         ofs_D_rph << i * dr * 1.0e-3 << " " << k * R0 * dph * 1.0e-3 << " " << Dr[NEW][i][Nth / 2][k] << " " << Dth[NEW][i][Nth / 2][k] 
         //         << " " << Dph[NEW][i][Nth / 2][k] << std::endl;
         //         // ofs_E_rph << i * dr * 1.0e-3 << " " << k * R0 * dph * 1.0e-3 << " " << Er[i][10][k] << " " << Eth[NEW][i][10][k] 

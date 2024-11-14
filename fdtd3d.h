@@ -12,8 +12,8 @@ constexpr double Z0 { std::sqrt( MU0 / EPS0 ) };
 
 constexpr double CHARGE_e { 1.602e-19 };
 constexpr double MASS_e { 9.1e-31 };
-// constexpr double B0 { 50000e-9 };
-constexpr double B0 { 0.0 };
+constexpr double B0 { 50000e-9 };
+// constexpr double B0 { 0.0 };
 constexpr double R0 { 6370.0e3 }; /* Radius of the Earth */
 
 constexpr int Year { 2015 };
@@ -30,15 +30,12 @@ constexpr double Rx_Latitude { 35.65966 };
 constexpr double Rx_Longitude { 139.54328 };
 
 /* 解析領域 */
-// constexpr double Rr { 112.0e3 };
-// constexpr double Rr { 128.0e3 };
-// constexpr double Rth { 50.0e3 };
-// constexpr double Rph { 1100.0e3 };
-// constexpr double Rph { 2050.0e3 };
-
-constexpr double Rr { 100.0e3 };
+constexpr double Rr { 124.0e3 };
 constexpr double Rth { 100.0e3 };
-constexpr double Rph { 100.0e3 };
+constexpr double Rph { 1100.0e3 };
+// constexpr double Rr { 100.0e3 };
+// constexpr double Rth { 60.0e3 };
+// constexpr double Rph { 60.0e3 };
 // constexpr double dr { 0.5e3 };
 // constexpr double Rdth { 0.5e3 };
 // constexpr double Rdph { 0.5e3 };
@@ -58,18 +55,18 @@ constexpr int Nph { int(Rph / Rdph) };
 /*xiの導入が必要*/
 // constexpr double f0 { 40.0e3 };
 constexpr double f0 { 22.2e3 };
-constexpr double Tmax { 0.005 };
+constexpr double Tmax { 0.08 };
 // constexpr double Tmax { 0.015 };
-constexpr double Ne_max { 1.0e10 };
+constexpr double Ne_max { 1.0e11 };
 constexpr double Omega { std::sqrt( CHARGE_e * CHARGE_e * Ne_max / MASS_e / EPS0 ) };
 constexpr double xi { 1.0 / std::sqrt( 1.0 + Omega * Omega / 4.0 / C0 / C0 / ( 1.0 / dr / dr + 1.0 / ( R0 * dth ) / ( R0 * dth ) 
                     + 1.0 / ( R0 * std::sin(M_PI / 2.0 - thR / 2.0) * dph ) / ( R0 * std::sin(M_PI / 2.0 - thR / 2.0) * dph ) ) ) };
 // constexpr double dt { xi * 0.25 / C0 / sqrt( 1.0 / dr / dr + 1.0 / (R0 * dth) / (R0 * dth) 
 //                         + 1.0 / (R0 * std::sin(M_PI / 2.0 - thR / 2.0) * dph) / (R0 * std::sin(M_PI / 2.0 - thR / 2.0) * dph)  ) };
-// constexpr double dt { xi * 0.5 / C0 / sqrt( 1.0 / dr / dr + 1.0 / (R0 * dth) / (R0 * dth) 
-//                         + 1.0 / (R0 * std::sin(M_PI / 2.0 - thR / 2.0) * dph) / (R0 * std::sin(M_PI / 2.0 - thR / 2.0) * dph)  ) };
-constexpr double dt {  0.9  / C0 / sqrt( 1.0 / dr / dr + 1.0 / (R0 * dth) / (R0 * dth) 
+constexpr double dt { xi * 0.5 / C0 / sqrt( 1.0 / dr / dr + 1.0 / (R0 * dth) / (R0 * dth) 
                         + 1.0 / (R0 * std::sin(M_PI / 2.0 - thR / 2.0) * dph) / (R0 * std::sin(M_PI / 2.0 - thR / 2.0) * dph)  ) };
+// constexpr double dt {  0.9  / C0 / sqrt( 1.0 / dr / dr + 1.0 / (R0 * dth) / (R0 * dth) 
+                        // + 1.0 / (R0 * std::sin(M_PI / 2.0 - thR / 2.0) * dph) / (R0 * std::sin(M_PI / 2.0 - thR / 2.0) * dph)  ) };
 constexpr int Nt { int(Tmax / dt) };
 
 constexpr double OMG { f0 * 2. * M_PI }; /* 角周波数 */
@@ -81,21 +78,22 @@ constexpr double PML_R { 1.0e-6 };
 
 /* 電流源パラメタ */
 // constexpr double sigma_J { 12 * dt };
-constexpr double current_dt { 7.29756e-07 };
-constexpr double sigma_J { 18.0 * current_dt };
 // constexpr double sigma_J { 1.0 / 2.0 / M_PI / f0 };
-constexpr double t0 { 6.0 * sigma_J };
 
-// constexpr double t0 { 1.0 / f0 };
-// constexpr double sigma_J { 0.25 * t0 };
+// constexpr double current_dt { 7.29756e-07 };
+// constexpr double sigma_J { 18.0 * current_dt };
+// constexpr double t0 { 6.0 * sigma_J };
+
+constexpr double t0 { 1.0 / f0 };
+constexpr double sigma_J { 0.25 * t0 };
 
 /* 電流源位置 */
 // constexpr double source_r { (PML_L + 1) * dr };
 // constexpr double source_th { Rth / 2.0 };
 // constexpr double source_ph { 50.0e3 };
-constexpr double source_r { 1.0 };
+constexpr double source_r { 0.0 };
 constexpr double source_th { Rth / 2.0 };
-constexpr double source_ph { Rph / 2.0 };
+constexpr double source_ph { 30.0e3 };
 
 /* プラズマ領域パラメタ */
 constexpr double Rr_iono_lower { 55.0e3 };
@@ -123,7 +121,7 @@ constexpr int Nr_iono { Nr_iono_upper - Nr_iono_lower + 1 };
 constexpr int Nth_iono { Nth_iono_upper - Nth_iono_lower + 1 };
 constexpr int Nph_iono { Nph_iono_upper - Nph_iono_lower + 1 };
 
-constexpr double exp_Ne { 10 };
+constexpr double exp_Ne { 9 };
 // constexpr double exp_Ne { 10.875 };
 constexpr double exp_nu { 7.0 };
 
@@ -164,8 +162,10 @@ void update_Dph_PML(double ****Dphr, double ****Dphr_tilde, double ****Dphth, do
                      double *CDPHTH_01, double ****check, int n);
 
 void update_Hr(double ***Hr, double ****Eth, double ****Eph, double ****check, int n);
-void update_Hth(double ****Hth, double ***Er, double ****Eph, double **Rs, double **Ls,double ****check, int n);
-void update_Hph(double ****Hph, double ***Er, double ****Eth, double **Rs, double **Ls, double ****check, int n);
+// void update_Hth(double ****Hth, double ***Er, double ****Eph, double **Rs, double **Ls,double ****check, int n);
+void update_Hth(double ****Hth, double ***Er, double ****Eph, double **Rs, double **Ls, double ***Bth, double **Bthr, double **Bthph, double *CHTHPH_00, double *CHTHPH_01, double ****check, int n);
+// void update_Hph(double ****Hph, double ***Er, double ****Eth, double **Rs, double **Ls, double ****check, int n);
+void update_Hph(double ****Hph, double ***Er, double ****Eth, double **Rs, double **Ls, double ***Bph, double **Bphr, double **Bphth, double *CHPHTH_00, double *CHPHTH_01, double ****check, int n);
 void update_Hr_PML(double ***Hr, double ***Hrth1, double ***Hrth2, double ***Hrph,
                      double ****Eth, double ****Eph, double *CHRTH1_00, double *CHRTH1_01,
                       double *CHRPH_00, double *CHRPH_01, double ****check, int n);

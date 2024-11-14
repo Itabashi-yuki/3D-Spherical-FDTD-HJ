@@ -142,15 +142,11 @@ int main(){
                        CHTHR_11, CHPHTH_00,CHPHTH_01, CHPHR_TILDE_00, CHPHR_TILDE_01, CHPHR_10, CHPHR_11, CHTH_TILDE, CHPH_TILDE);
     initialize_Plasma(S, B);
     // exit(0);
-    // std::ofstream ofs("./data/" + global_dirName + "/Coefficient.dat");
-    // for(int i = 0; i < Nr; i++){
-    //     ofs << CETHR_10[i] << " " << CETHR_11[i] << " " << CETHR_TILDE_00[i] << " " << CETHR_TILDE_01[i] <<  " " << CEPHR_10[i] << " " << CEPHR_11[i] << std::endl;
-    // }
+
     // int n0 = cal_obs_n0();
     double st, en;
-    int n0 = 100;
-    // std::cout << Nt << std::endl;
-    // exit(0);
+    int n0 = 50;
+
     std::ofstream ofs_div_time( PATH + "data/" + global_dirName +"div_time_dt_"+ std::to_string(exp_Ne) + ".dat", std::ios::app);
     std::ofstream ofs_obs( PATH + "data/" + global_dirName +"obs.dat",std::ios::app);
     // ofs_obs << "r方向 + 5km, th方向 + 5km, ph方向 + 5km " << std::endl;
@@ -165,50 +161,45 @@ int main(){
     double **Rs = allocate_2d(Nth + 1, Nph + 1, 0.0);
     double **Ls = allocate_2d(Nth + 1, Nph + 1, 0.0);
     intialize_surface_impedance(Rs, Ls);
-    // std::ofstream ofs_imp( PATH + "data/" + global_dirName + "surface_impedance.dat");
-    // for(int j = 0; j < Nth; j++){
-    //     for(int k = 0; k < Nph; k++){
-    //         ofs_imp << j * R0 * dth *1e-3 << " " << k * R0 * dph *1e-3 << " " << Rs[j][k] << " " << Ls[j][k] << std::endl;
-    //     }
-    // }
-    // ofs_imp.close();
-    // exit(0);
     // double Ave = 0.;
     // std::ofstream ofs_source(PATH + "data/" + global_dirName + "source.dat", std::ios::app);
-    for(int n = 1; n < 700; n++){
+    for(int n = 1; n < Nt; n++){
         int NEW = n % 2;
         if(n % 100 == 0){
+            // std::cout << n << " / " << Nt << std::endl;
             std::cout << n << " / " << Nt << std::endl;
         }
-        // if(n % 1000 == 0){
-        //     std::cout << n << " / " << Nt << std::endl;
-        // }
+
         double t = dt * ( n - 0.5 );
+
         // st = omp_get_wtime();
+        // std::cout << en - st << std::endl;
+
         update_Er(Er, Hth, Hph, Jr, check, n);
         update_Eth(Eth, Hr, Hph, Jth, check, n);
         update_Eph(Eph, Hr, Hth, Jph, check, n);
-        // std::cout << en - st << std::endl;
 
         update_Dr_PML(Drth1, Drth2, Drph, Dr, Hr, Hth, Hph, CDRTH1_00, CDRTH1_01, CDRPH_00, CDRPH_01, check, n);
         update_Dth_PML(Dthph, Dthr, Dthr_tilde, Dth, Hr, Hph_tilde, CDTHPH_00, CDTHPH_01,
                          CDTHR_10, CDTHR_11, CDTHR_TILDE_00, CDTHR_TILDE_01, check, n);
         update_Dph_PML(Dphr, Dphr_tilde, Dphth, Dph, Hr, Hth_tilde, CDPHR_10, CDPHR_11,
                          CDPHR_TILDE_00, CDPHR_TILDE_01, CDPHTH_00, CDPHTH_01, check, n);
-        
+       
         update_Er_PML(Er, Dr, Hth, Hph, Jr, check, n);
         update_Eth_PML(Eth, Dth, Hr, Hph, Jth, check, n);
         update_Eph_PML(Eph, Dph, Hr, Hth, Jph, check, n);
         update_Eth_tilde(Eth_tilde, Eth, CETH_TILDE_00,check, n);
         update_Eph_tilde(Eph_tilde, Eph, CEPH_TILDE_00, check,  n);
 
+        // exit(0);
        
         Er[int((source_r) / dr)][int((source_th) / Rdth)][int((source_ph) / Rdph)] -= dt / EPS0 * source_J(t);
+        // Er[0][Nth/2][30] -= dt / EPS0 * source_J(t);
         // Eph[NEW][int((source_r) / dr)][int((source_th) / Rdth)][int((source_ph) / Rdph)] -= dt / EPS0 * source_J(t);
 
         update_Hr(Hr, Eth, Eph, check, n);
-        update_Hth(Hth, Er, Eph, Rs, Ls, check, n);
-        update_Hph(Hph, Er, Eth, Rs, Ls, check, n);
+        update_Hth(Hth, Er, Eph, Rs, Ls, Bth, Bthr, Bthph, CHTHPH_00, CHTHPH_01, check, n);
+        update_Hph(Hph, Er, Eth, Rs, Ls, Bph, Bphr, Bphth, CHPHTH_00, CHPHTH_01, check, n);
 
 
         update_Hr_PML(Hr, Hrth1, Hrth2, Hrph, Eth, Eph,
@@ -224,9 +215,9 @@ int main(){
         update_Hth_tilde(Hth_tilde, Hth, CHTH_TILDE, check, n);
         update_Hph_tilde(Hph_tilde, Hph, CHPH_TILDE, check,n);
         update_Jr(Jr, Jth, Jph, Er, Eth, Eph, S, B, n);
-        // exit(0);
         update_Jth(Jr, Jth, Jph, Er, Eth, Eph, S, B, n);
         update_Jph(Jr, Jth, Jph, Er, Eth, Eph, S, B, n);
+
         // en = omp_get_wtime();
         // Ave += en - st;
         // std::ofstream ofs("./data/" + global_dirName + "/E_PML_" + std::to_string(n) + ".dat");
@@ -234,6 +225,7 @@ int main(){
         //     ofs << k * R0 * dph * 1.0e-3 << " " << Erth1[NEW][Nr / 2][Nth / 2][k] << " " << Erth2[NEW][Nr / 2][Nth / 2][k] << " " << Erph[NEW][Nr / 2][Nth / 2][k] 
         //             << " " << Ethph[NEW][Nr / 2][Nth / 2][k] << " " << Ethr[NEW][Nr / 2][Nth / 2][k] << " " << Ethr_tilde[NEW][Nr / 2][Nth / 2][k] << std::endl;          
         // }
+
         output_E(Er, Eth, Eph, Hr, Hth, Hph, Jr, Jth, Jph, Dr, Dth, Dph, n, n0);
 
         if(std::abs(Er[Nr-5][Nth/2][1]) > 10000){
@@ -242,12 +234,16 @@ int main(){
             std::cout << "発散しました" << std::endl;
             break;
         }
+
+        int obs_r = 50;
         ofs_obs << n * dt   << " " << Er[obs_Nr][obs_Nth][obs_Nph]
                             << " " << Er[int((Rr_iono_lower + 5.0e3) / dr)][obs_Nth][obs_Nph]
-                            << " " << Er[PML_L][Nth/2][Nph-PML_L - 1] << std::endl;
+                            << " " << Er[obs_r][Nth/2][Nph/2] 
+                            << " " << Eth[NEW][obs_r][Nth/2][Nph/2]
+                            << " " << Eph[NEW][obs_r][Nth/2][Nph/2] <<  std::endl;
         
         for(int k = PML_L + 1; k <= Nph - PML_L - 1; k++){
-            Er0[k] += Er[PML_L][Nth/2][k] * std::exp( -1.0 * zj * OMG * t ) * dt;
+            Er0[k] += Er[0][Nth/2][k] * std::exp( -1.0 * zj * OMG * t ) * dt;
         }
 
         // ofs_source << n * dt << " " << source_J(t) << std::endl;

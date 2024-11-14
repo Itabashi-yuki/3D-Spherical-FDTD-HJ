@@ -8,7 +8,7 @@ void update_Jr(double ****Jr, double ****Jth, double ****Jph, double ***Er, doub
     int NEW = n % 2;
     int OLD = (n + 1) % 2;
 
-    omp_set_num_threads(8);
+    omp_set_num_threads(10);
     #pragma omp parallel for collapse(3)
     for(int i = Nr_iono_lower; i < Nr_iono_upper; i++){
         for(int j = Nth_iono_lower + 1; j <= Nth_iono_upper; j++){
