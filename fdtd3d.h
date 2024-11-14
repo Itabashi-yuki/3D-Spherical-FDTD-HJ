@@ -8,6 +8,8 @@ const std::string PATH { "/home/itabashi/OneDrive/Lab/3D_Spherical_FDTD_HJ/" };
 constexpr double C0 { 3.0e8 };
 constexpr double MU0 { 4.0 * M_PI * 1.0e-7 };
 constexpr double EPS0 { 1.0 / MU0 / C0 / C0 };
+constexpr double Z0 { std::sqrt( MU0 / EPS0 ) };
+
 constexpr double CHARGE_e { 1.602e-19 };
 constexpr double MASS_e { 9.1e-31 };
 // constexpr double B0 { 50000e-9 };
@@ -17,6 +19,8 @@ constexpr double R0 { 6370.0e3 }; /* Radius of the Earth */
 constexpr int Year { 2015 };
 constexpr int Month { 6 };
 constexpr int Day { 18 };
+constexpr int Hour { 17 };
+constexpr int Min { 0 };
 /* えびの 緯度経度 */
 constexpr double Tx_Latitude { 32.067650 };
 constexpr double Tx_Longitude { 130.828978 };
@@ -26,14 +30,12 @@ constexpr double Rx_Latitude { 35.65966 };
 constexpr double Rx_Longitude { 139.54328 };
 
 /* 解析領域 */
-constexpr double Rr { 100.0e3 };
+constexpr double Rr { 124.0e3 };
 constexpr double Rth { 100.0e3 };
-constexpr double Rph { 100.0e3 };
-// constexpr double Rph { 300.0e3 };
-
-// constexpr double Rr { 90.0e3 };
-// constexpr double Rth { 50.0e3 };
-// constexpr double Rph { 1000.0e3 };
+constexpr double Rph { 1100.0e3 };
+// constexpr double Rr { 100.0e3 };
+// constexpr double Rth { 60.0e3 };
+// constexpr double Rph { 60.0e3 };
 // constexpr double dr { 0.5e3 };
 // constexpr double Rdth { 0.5e3 };
 // constexpr double Rdph { 0.5e3 };
@@ -53,18 +55,18 @@ constexpr int Nph { int(Rph / Rdph) };
 /*xiの導入が必要*/
 // constexpr double f0 { 40.0e3 };
 constexpr double f0 { 22.2e3 };
-constexpr double Tmax { 0.005 };
-// constexpr double Tmax { 0.01 };
-constexpr double Ne_max { 1.0e10 };
+constexpr double Tmax { 0.08 };
+// constexpr double Tmax { 0.015 };
+constexpr double Ne_max { 1.0e11 };
 constexpr double Omega { std::sqrt( CHARGE_e * CHARGE_e * Ne_max / MASS_e / EPS0 ) };
 constexpr double xi { 1.0 / std::sqrt( 1.0 + Omega * Omega / 4.0 / C0 / C0 / ( 1.0 / dr / dr + 1.0 / ( R0 * dth ) / ( R0 * dth ) 
                     + 1.0 / ( R0 * std::sin(M_PI / 2.0 - thR / 2.0) * dph ) / ( R0 * std::sin(M_PI / 2.0 - thR / 2.0) * dph ) ) ) };
-// constexpr double dt { xi * 0.9 / C0 / sqrt( 1.0 / dr / dr + 1.0 / (R0 * dth) / (R0 * dth) 
-                        // + 1.0 / (R0 * std::sin(M_PI / 2.0 - thR / 2.0) * dph) / (R0 * std::sin(M_PI / 2.0 - thR / 2.0) * dph)  ) };
-// constexpr double dt { xi * 0.5 / C0 / sqrt( 1.0 / dr / dr + 1.0 / (R0 * dth) / (R0 * dth) 
+// constexpr double dt { xi * 0.25 / C0 / sqrt( 1.0 / dr / dr + 1.0 / (R0 * dth) / (R0 * dth) 
 //                         + 1.0 / (R0 * std::sin(M_PI / 2.0 - thR / 2.0) * dph) / (R0 * std::sin(M_PI / 2.0 - thR / 2.0) * dph)  ) };
-constexpr double dt {  0.9  / C0 / sqrt( 1.0 / dr / dr + 1.0 / (R0 * dth) / (R0 * dth) 
+constexpr double dt { xi * 0.5 / C0 / sqrt( 1.0 / dr / dr + 1.0 / (R0 * dth) / (R0 * dth) 
                         + 1.0 / (R0 * std::sin(M_PI / 2.0 - thR / 2.0) * dph) / (R0 * std::sin(M_PI / 2.0 - thR / 2.0) * dph)  ) };
+// constexpr double dt {  0.9  / C0 / sqrt( 1.0 / dr / dr + 1.0 / (R0 * dth) / (R0 * dth) 
+                        // + 1.0 / (R0 * std::sin(M_PI / 2.0 - thR / 2.0) * dph) / (R0 * std::sin(M_PI / 2.0 - thR / 2.0) * dph)  ) };
 constexpr int Nt { int(Tmax / dt) };
 
 constexpr double OMG { f0 * 2. * M_PI }; /* 角周波数 */
@@ -76,17 +78,22 @@ constexpr double PML_R { 1.0e-6 };
 
 /* 電流源パラメタ */
 // constexpr double sigma_J { 12 * dt };
+// constexpr double sigma_J { 1.0 / 2.0 / M_PI / f0 };
+
 // constexpr double current_dt { 7.29756e-07 };
-constexpr double t0 { 1.0 / f0 };
 // constexpr double sigma_J { 18.0 * current_dt };
-constexpr double sigma_J { 1.0 / 2.0 / M_PI / f0 };
 // constexpr double t0 { 6.0 * sigma_J };
+
+constexpr double t0 { 1.0 / f0 };
+constexpr double sigma_J { 0.25 * t0 };
+
+/* 電流源位置 */
 // constexpr double source_r { (PML_L + 1) * dr };
 // constexpr double source_th { Rth / 2.0 };
 // constexpr double source_ph { 50.0e3 };
-constexpr double source_r { Rr / 2.0 };
+constexpr double source_r { 0.0 };
 constexpr double source_th { Rth / 2.0 };
-constexpr double source_ph { Rph / 2.0 };
+constexpr double source_ph { 30.0e3 };
 
 /* プラズマ領域パラメタ */
 constexpr double Rr_iono_lower { 55.0e3 };
@@ -114,13 +121,13 @@ constexpr int Nr_iono { Nr_iono_upper - Nr_iono_lower + 1 };
 constexpr int Nth_iono { Nth_iono_upper - Nth_iono_lower + 1 };
 constexpr int Nph_iono { Nph_iono_upper - Nph_iono_lower + 1 };
 
-constexpr double exp_Ne { 10 };
+constexpr double exp_Ne { 9 };
 // constexpr double exp_Ne { 10.875 };
 constexpr double exp_nu { 7.0 };
 
 // constexpr double THETA { M_PI / 4.0 };
-constexpr double THETA { 0.0 };
-constexpr double PHI { M_PI / 4.0 };
+constexpr double THETA { M_PI / 2.0 };
+constexpr double PHI { M_PI / 2.0 };
 
 /*観測パラメタ*/
 // constexpr double obs_r { Rr_iono_lower - 5.0e3 };
@@ -134,7 +141,8 @@ constexpr double obs_t_step{ 1.0e-3 };
 constexpr int obs_Nr { int(obs_r / dr) };
 constexpr int obs_Nth { int(obs_th / Rdth) };
 constexpr int obs_Nph { int(obs_ph / Rdph) };
-
+constexpr double diurnal_pattern_pos { 900.0e3 };
+constexpr int N_diurnal_pattern_pos { int(diurnal_pattern_pos / Rdph) };
 
 void update_Er(double ***Er, double ****Hth, double ****Hph, double ****Jr, double ****check, int n);
 void update_Eth(double ****Eth, double ***Hr, double ****Hph, double ****Jth, double ****check, int n);
@@ -154,14 +162,19 @@ void update_Dph_PML(double ****Dphr, double ****Dphr_tilde, double ****Dphth, do
                      double *CDPHTH_01, double ****check, int n);
 
 void update_Hr(double ***Hr, double ****Eth, double ****Eph, double ****check, int n);
-void update_Hth(double ****Hth, double ***Er, double ****Eph, double ****check, int n);
-void update_Hph(double ****Hph, double ***Er, double ****Eth, double ****check, int n);
+// void update_Hth(double ****Hth, double ***Er, double ****Eph, double **Rs, double **Ls,double ****check, int n);
+void update_Hth(double ****Hth, double ***Er, double ****Eph, double **Rs, double **Ls, double ***Bth, double **Bthr, double **Bthph, double *CHTHPH_00, double *CHTHPH_01, double ****check, int n);
+// void update_Hph(double ****Hph, double ***Er, double ****Eth, double **Rs, double **Ls, double ****check, int n);
+void update_Hph(double ****Hph, double ***Er, double ****Eth, double **Rs, double **Ls, double ***Bph, double **Bphr, double **Bphth, double *CHPHTH_00, double *CHPHTH_01, double ****check, int n);
 void update_Hr_PML(double ***Hr, double ***Hrth1, double ***Hrth2, double ***Hrph,
                      double ****Eth, double ****Eph, double *CHRTH1_00, double *CHRTH1_01,
                       double *CHRPH_00, double *CHRPH_01, double ****check, int n);
-void update_Hth_PML(double ****Hth, double ***Hthr, double ***Hthph, double ****Hthr_tilde, double ***Er, double ****Eph_tilde, double *CHTHPH_00,
-                 double *CHTHPH_01, double *CHTHR_TILDE_00, double *CHTHR_TILDE_01, double *CHTHR_10, double *CHTHR_11, double ****check, int n);
-void update_Hph_PML(double ****Hph, double ***Hphr, double ***Hphth, double ****Hphr_tilde, double ***Er, double ****Eth_tilde,
+void update_Hth_PML(double ****Hth, double ***Hthr, double ***Hthph, double ****Hthr_tilde, double ***Er, double ****Eph, double ****Eph_tilde,
+                 double ***Bth, double **Bthr, double **Bthph, double **Rs, double **Ls,
+                 double *CHTHPH_00,double *CHTHPH_01, double *CHTHR_TILDE_00, double *CHTHR_TILDE_01,
+                double *CHTHR_10, double *CHTHR_11, double ****check, int n);
+void update_Hph_PML(double ****Hph, double ***Hphr, double ***Hphth, double ****Hphr_tilde, double ***Er, double ****Eth, double ****Eth_tilde,
+                     double ***Bph, double **Bphr, double **Bphth, double **Rs, double **Ls,
                      double *CHPHTH_00, double *CHPHTH_01, double *CHPHR_TILDE_00, double *CHPHR_TILDE_01, double *CHPHR_10, double *CHPHR_11, double ****check, int n);
 void update_Hth_tilde(double ***Hth_tilde, double ****Hth, double *CHTH_TILDE, double ****check, int n);
 void update_Hph_tilde(double ***Hph_tilde, double ****Hph, double *CHPH_TILDE, double ****chcek, int n);
@@ -188,12 +201,14 @@ void initialize_PML(double *CERTH1_00, double *CERTH1_01, double *CERPH_00, doub
                      double *CEPH_TILDE_00, double *CEPH_TILDE_01, double *CHRTH1_00, double *CHRTH1_01, double *CHRPH_00, double *CHRPH_01, double *CHTHPH_00,
                      double *CHTHPH_01, double *CHTHR_TILDE_00, double *CHTHR_TILDE_01, double *CHTHR_10, double *CHTHR_11,
                      double *CHPHTH_00, double *CHPHTH_01, double *CHPHR_TILDE_00, double *CHPHR_TILDE_01, double *CHPHR_10, double *CHPHR_11, double *CHTH_TILDE, double *CHPH_TILDE);
+void intialize_surface_impedance(double **Rs, double **Ls);
+double sig_s(double th, double ph);
 
 double source_J(double t);
 double cal_Ne(double exp_Ne);
 double cal_nu(double exp_nu);
 void initialize_Plasma(Eigen::Matrix3d ***S, Eigen::Matrix3d ***B);
-Eigen::Vector3d transform_geomag(double Inc, double Dec, double th, double ph);
+Eigen::Vector3d transform_geomag(double z, double th_idx, double ph_idx, int i, int j, int k);
 
 double **** allocate_4d(int dim1, int dim2, int dim3, int dim4, double initial_Value);
 double *** allocate_3d(int dim1, int dim2, int dim3, double initial_Value);
@@ -218,4 +233,9 @@ inline double theta(double j){
 
 inline double cot(double theta){
     return 1.0 / tan(theta);
+}
+
+inline double Refractive_index(const double z){
+  /* refractive index of standard air */
+  return 1.000325 - 0.039e-6 * z;
 }

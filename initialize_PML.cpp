@@ -71,7 +71,8 @@ void initialize_PML(double *CDRTH1_00, double *CDRTH1_01, double *CDRPH_00, doub
     double *sigma_r_tilde_H = allocate_1d(Nr, 0.0);
 
     for(int i = 1; i <= PML_L; i++){
-        sigma_r_tilde_E[i] = PML_sigma_r_tilde(i);
+        // sigma_r_tilde_E[i] = PML_sigma_r_tilde(i);
+        sigma_r_tilde_E[i] = 0.0;
     }
 
     for(int i = Nr - PML_L; i <= Nr - 1; i++){
@@ -79,7 +80,8 @@ void initialize_PML(double *CDRTH1_00, double *CDRTH1_01, double *CDRPH_00, doub
     }
 
     for(int i = 1; i <= PML_L; i++){
-        sigma_r_E[i] = PML_sigma_r(i);
+        // sigma_r_E[i] = PML_sigma_r(i);
+        sigma_r_E[i] = 0.0;
     }
 
     for(int i = Nr - PML_L; i <= Nr - 1; i++){
@@ -103,7 +105,8 @@ void initialize_PML(double *CDRTH1_00, double *CDRTH1_01, double *CDRPH_00, doub
     }
 
     for(int i = 0; i < PML_L; i++){
-        sigma_r_H[i] = PML_sigma_r(i + 0.5);
+        // sigma_r_H[i] = PML_sigma_r(i + 0.5);
+        sigma_r_H[i] = 0.0;
     }
 
     for(int i = Nr - PML_L; i < Nr; i++){
@@ -127,7 +130,8 @@ void initialize_PML(double *CDRTH1_00, double *CDRTH1_01, double *CDRPH_00, doub
     }
 
     for(int i = 0; i < PML_L; i++){
-        sigma_r_tilde_H[i] = PML_sigma_r_tilde(i + 0.5);
+        // sigma_r_tilde_H[i] = PML_sigma_r_tilde(i + 0.5);
+        sigma_r_tilde_H[i] = 0.0;
     }
 
     for(int i = Nr - PML_L; i < Nr; i++){

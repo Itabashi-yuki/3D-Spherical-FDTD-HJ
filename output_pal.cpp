@@ -50,7 +50,8 @@ void output_pal(){
     ofs_pal << "THETA = " << THETA << std::endl; 
     ofs_pal << "PHI = " << PHI << std::endl; 
 
-
+    ofs_pal << "-------大地インピーダンスパラメタ-------" << std::endl;
+    ofs_pal << "sigma = " << sig_s(0,0) << std::endl;
 
     ofs_pal.close();
 }

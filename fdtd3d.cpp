@@ -50,6 +50,13 @@ int main(){
     double ***Hth_tilde = allocate_3d(Nr, Nth + 1, Nph, 0.0);
     double ***Hph_tilde = allocate_3d(Nr, Nth, Nph + 1, 0.0);
     
+    double ***Bth = allocate_3d(2, Nth + 1, Nph, 0.0);
+    double ***Bph = allocate_3d(2, Nth, Nph + 1, 0.0);
+    double **Bthr = allocate_2d(Nth + 1, Nph, 0.0);
+    double **Bthph = allocate_2d(Nth + 1, Nph, 0.0);
+    double **Bphr = allocate_2d(Nth, Nph + 1, 0.0);
+    double **Bphth = allocate_2d(Nth, Nph + 1, 0.0);
+
     double ****Jr = allocate_4d(2, Nr, Nth + 1, Nph + 1, 0.0);
     double ****Jth = allocate_4d(2, Nr + 1, Nth, Nph + 1, 0.0);
     double ****Jph = allocate_4d(2, Nr + 1, Nth + 1, Nph, 0.0);
@@ -135,15 +142,11 @@ int main(){
                        CHTHR_11, CHPHTH_00,CHPHTH_01, CHPHR_TILDE_00, CHPHR_TILDE_01, CHPHR_10, CHPHR_11, CHTH_TILDE, CHPH_TILDE);
     initialize_Plasma(S, B);
     // exit(0);
-    // std::ofstream ofs("./data/" + global_dirName + "/Coefficient.dat");
-    // for(int i = 0; i < Nr; i++){
-    //     ofs << CETHR_10[i] << " " << CETHR_11[i] << " " << CETHR_TILDE_00[i] << " " << CETHR_TILDE_01[i] <<  " " << CEPHR_10[i] << " " << CEPHR_11[i] << std::endl;
-    // }
+
     // int n0 = cal_obs_n0();
     double st, en;
-    int n0 = 1;
-    // std::cout << Nt << std::endl;
-    // exit(0);
+    int n0 = 50;
+
     std::ofstream ofs_div_time( PATH + "data/" + global_dirName +"div_time_dt_"+ std::to_string(exp_Ne) + ".dat", std::ios::app);
     std::ofstream ofs_obs( PATH + "data/" + global_dirName +"obs.dat",std::ios::app);
     // ofs_obs << "r方向 + 5km, th方向 + 5km, ph方向 + 5km " << std::endl;
@@ -154,57 +157,67 @@ int main(){
         Er0[i] = std::complex <double> {0., 0.};
     }
 
+    /* 表面インピーダンス法 */
+    double **Rs = allocate_2d(Nth + 1, Nph + 1, 0.0);
+    double **Ls = allocate_2d(Nth + 1, Nph + 1, 0.0);
+    intialize_surface_impedance(Rs, Ls);
     // double Ave = 0.;
     // std::ofstream ofs_source(PATH + "data/" + global_dirName + "source.dat", std::ios::app);
     for(int n = 1; n < 300; n++){
         int NEW = n % 2;
         if(n % 100 == 0){
+            // std::cout << n << " / " << Nt << std::endl;
             std::cout << n << " / " << Nt << std::endl;
         }
-        // if(n % 1000 == 0){
-        //     std::cout << n << " / " << Nt << std::endl;
-        // }
+
         double t = dt * ( n - 0.5 );
+
         // st = omp_get_wtime();
+        // std::cout << en - st << std::endl;
+
         update_Er(Er, Hth, Hph, Jr, check, n);
         update_Eth(Eth, Hr, Hph, Jth, check, n);
         update_Eph(Eph, Hr, Hth, Jph, check, n);
-        // std::cout << en - st << std::endl;
+
         update_Dr_PML(Drth1, Drth2, Drph, Dr, Hr, Hth, Hph, CDRTH1_00, CDRTH1_01, CDRPH_00, CDRPH_01, check, n);
         update_Dth_PML(Dthph, Dthr, Dthr_tilde, Dth, Hr, Hph_tilde, CDTHPH_00, CDTHPH_01,
                          CDTHR_10, CDTHR_11, CDTHR_TILDE_00, CDTHR_TILDE_01, check, n);
         update_Dph_PML(Dphr, Dphr_tilde, Dphth, Dph, Hr, Hth_tilde, CDPHR_10, CDPHR_11,
                          CDPHR_TILDE_00, CDPHR_TILDE_01, CDPHTH_00, CDPHTH_01, check, n);
-
-        
+       
         update_Er_PML(Er, Dr, Hth, Hph, Jr, check, n);
         update_Eth_PML(Eth, Dth, Hr, Hph, Jth, check, n);
         update_Eph_PML(Eph, Dph, Hr, Hth, Jph, check, n);
         update_Eth_tilde(Eth_tilde, Eth, CETH_TILDE_00,check, n);
         update_Eph_tilde(Eph_tilde, Eph, CEPH_TILDE_00, check,  n);
 
+        // exit(0);
        
         Er[int((source_r) / dr)][int((source_th) / Rdth)][int((source_ph) / Rdph)] -= dt / EPS0 * source_J(t);
+        // Er[0][Nth/2][30] -= dt / EPS0 * source_J(t);
+        // Eph[NEW][int((source_r) / dr)][int((source_th) / Rdth)][int((source_ph) / Rdph)] -= dt / EPS0 * source_J(t);
 
         update_Hr(Hr, Eth, Eph, check, n);
-        update_Hth(Hth, Er, Eph, check, n);
-        update_Hph(Hph, Er, Eth, check, n);
+        update_Hth(Hth, Er, Eph, Rs, Ls, Bth, Bthr, Bthph, CHTHPH_00, CHTHPH_01, check, n);
+        update_Hph(Hph, Er, Eth, Rs, Ls, Bph, Bphr, Bphth, CHPHTH_00, CHPHTH_01, check, n);
 
 
         update_Hr_PML(Hr, Hrth1, Hrth2, Hrph, Eth, Eph,
                          CHRTH1_00, CHRTH1_01, CHRPH_00, CHRPH_01, check, n);
-        update_Hth_PML(Hth, Hthr, Hthph, Hthr_tilde, Er, Eph_tilde,
+        update_Hth_PML(Hth, Hthr, Hthph, Hthr_tilde, Er, Eph, Eph_tilde,
+                         Bth, Bthr, Bthph, Rs, Ls,
                          CHTHPH_00, CHTHPH_01, CHTHR_TILDE_00, CHTHR_TILDE_01,
                          CHTHR_10, CHTHR_11, check, n);
-        update_Hph_PML(Hph, Hphr, Hphth, Hphr_tilde, Er, Eth_tilde,
+        update_Hph_PML(Hph, Hphr, Hphth, Hphr_tilde, Er, Eth, Eth_tilde,
+                         Bph, Bphr, Bphth, Rs, Ls,
                          CHPHTH_00, CHPHTH_01, CHPHR_TILDE_00, CHPHR_TILDE_01,
                           CHPHR_10, CHPHR_11, check, n);
         update_Hth_tilde(Hth_tilde, Hth, CHTH_TILDE, check, n);
         update_Hph_tilde(Hph_tilde, Hph, CHPH_TILDE, check,n);
         update_Jr(Jr, Jth, Jph, Er, Eth, Eph, S, B, n);
-        // exit(0);
         update_Jth(Jr, Jth, Jph, Er, Eth, Eph, S, B, n);
         update_Jph(Jr, Jth, Jph, Er, Eth, Eph, S, B, n);
+
         // en = omp_get_wtime();
         // Ave += en - st;
         // std::ofstream ofs("./data/" + global_dirName + "/E_PML_" + std::to_string(n) + ".dat");
@@ -220,12 +233,16 @@ int main(){
             std::cout << "発散しました" << std::endl;
             break;
         }
+
+        int obs_r = 50;
         ofs_obs << n * dt   << " " << Er[obs_Nr][obs_Nth][obs_Nph]
                             << " " << Er[int((Rr_iono_lower + 5.0e3) / dr)][obs_Nth][obs_Nph]
-                            << " " << Er[PML_L][Nth/2][Nph-PML_L - 1] << std::endl;
+                            << " " << Er[obs_r][Nth/2][Nph/2] 
+                            << " " << Eth[NEW][obs_r][Nth/2][Nph/2]
+                            << " " << Eph[NEW][obs_r][Nth/2][Nph/2] <<  std::endl;
         
         for(int k = PML_L + 1; k <= Nph - PML_L - 1; k++){
-            Er0[k] += Er[PML_L][Nth/2][k] * std::exp( -1.0 * zj * OMG * t ) * dt;
+            Er0[k] += Er[0][Nth/2][k] * std::exp( -1.0 * zj * OMG * t ) * dt;
         }
 
         // ofs_source << n * dt << " " << source_J(t) << std::endl;
@@ -238,6 +255,11 @@ int main(){
         ofs_Er0 << k * R0 * dph * 1e-3 << " " << std::abs( Er0[k] ) << " "
             << std::arg( Er0[k] ) << std::endl;
     }
+    ofs_Er0.close();
+
+    std::ofstream ofs_diurnal_pattern( PATH + "data/" + global_dirName + "diurnal_pattern_900km.dat" );
+    ofs_diurnal_pattern << Hour << " " << Min << " " << Er0[N_diurnal_pattern_pos] << std::endl;
+    ofs_diurnal_pattern.close();
 
     // std::ofstream ofs_check( PATH + "data/"+ global_dirName + "check.dat");
     // ofs_check << "# n, i, j, k, check" << std::endl;
